@@ -14,4 +14,3 @@ ggplot(iris) +
 
 set.seed(123)
 sample(c("apples", "bananas", "dacoconutnutisagiantnut"), 5, TRUE)
-

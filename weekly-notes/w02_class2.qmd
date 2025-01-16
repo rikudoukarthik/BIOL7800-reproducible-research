@@ -20,3 +20,7 @@ plot(1:10)
 ```
 
 tinytex installation required for most first-time users.
+
+___
+
+[My GitHub repo](https://github.com/rikudoukarthik/BIOL7800-reproducible-research) has now been added to [the course's GitLab page](https://gitlab.com/gklab/rr-2025).
