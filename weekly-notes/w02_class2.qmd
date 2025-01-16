@@ -1,0 +1,22 @@
+---
+title: "A new Quarto document outputting a PDF"
+format: pdf
+editor_options: 
+  chunk_output_type: console
+---
+
+# 2025-01-16 Class 2
+
+Document to try knitting to PDF.
+
+This is text for humans, for instance:
+
+> GitLab is like Instagram
+> 
+> --- Gaurav Kandlikar, 2025
+
+```{r}
+plot(1:10)
+```
+
+tinytex installation required for most first-time users.
