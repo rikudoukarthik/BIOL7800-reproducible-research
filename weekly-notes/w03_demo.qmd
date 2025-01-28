@@ -1,8 +1,9 @@
 ---
 title: "Diamond sizes"
-date: 2022-09-12
-format: pdf
+date: 2025-01-28
+format: html
 embed-resources: true
+toc: true
 editor_options: 
   chunk_output_type: console
 ---
@@ -17,15 +18,29 @@ smaller <- diamonds |>
   filter(carat <= 2.5)
 ```
 
-We have data about `r nrow(diamonds)` diamonds.
-Only `r nrow(diamonds) - nrow(smaller)` are larger than 2.5 carats.
-The distribution of the remainder is shown below:
+We have data about `r nrow(diamonds)` diamonds. Only `r nrow(diamonds) - nrow(smaller)` are larger than 2.5 carats. The distribution of the remainder is shown below:
 
 ```{r}
 #| label: plot-smaller-diamonds
 #| echo: true
+#| fig-cap: "This is the caption for the above figure. It shows the number of diamons of different carat values."
 
 smaller |> 
   ggplot(aes(x = carat)) + 
   geom_freqpoly(binwidth = 0.01)
+```
+
+Here's a statement for which we need a citation [@thrikkadeeri2024].
+
+## Deep dive into `smaller`
+
+```{r}
+#| label: plot-cuts-carats
+#| echo: false
+
+smaller %>% 
+  ggplot(aes(x = cut, y = carat)) +
+  geom_boxplot(col = "black", fill = "grey30")
+  # geom_violin(col = "black", fill = "grey30")
+    
 ```
