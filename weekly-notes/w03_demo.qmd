@@ -23,7 +23,7 @@ The distribution of the remainder is shown below:
 
 ```{r}
 #| label: plot-smaller-diamonds
-#| echo: false
+#| echo: true
 
 smaller |> 
   ggplot(aes(x = carat)) + 
