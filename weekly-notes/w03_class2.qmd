@@ -1,0 +1,122 @@
+---
+title: Practising Qmd writing
+date: "2025-01-30"
+format: html
+toc: true
+fig-cap-location: top
+editor_options: 
+  chunk_output_type: console
+---
+
+# Markdown
+
+We want to use this document to practise writing with Markdown, and so this would mean using many of the nice formatting features that Markdown supports.
+
+## One Piece to start off
+
+To begin with, here are a handful of my favourite quotes from [One Piece](https://onepiece.fandom.com/wiki/One_Piece_Wiki):
+
+> People's dreams... have no end!
+>
+> --- Marshall D. Teach
+
+> Pirates are evil? The Marines are righteous? These terms have always changed throughout the course of history!
+>
+> --- Donquixote Doflamingo
+
+> Pirates are evil? The Marines are righteous? These terms have always changed throughout the course of history! Kids who have never seen peace and kids who have never seen war have different values! Those who stand at the top determine what's wrong and what's right! This very place is neutral ground! Justice will prevail, you say? But of course it will! Whoever wins this war becomes justice!
+>
+> --- Donquixote Doflamingo
+
+> Being strong isn't about having power, but rather about one's spirit.
+>
+> --- Roronoa Zoro
+
+> When does a man die? When he is hit by a bullet? No! When he suffers a disease? No! When he eats a soup made out of a poisonous mushroom? No! A man dies when he is forgotten!
+>
+> --- Dr Hiluluk
+
+## Moving on...
+
+Fool me *once*, shame on you. Fool me **twice**, shame on me. 
+
+Fool me ***three times***, hold up rewind, that's not even possible...
+
+![The above line is from the song "That's A Joke" by NF. (Image: Artwork for NF)](https://i1.sndcdn.com/artworks-GQ99bzj4ZrXsj3SE-SjDPWA-t500x500.jpg)
+
+Underlining [important points]{.underline}.
+
+# Code chunks
+
+```{r label1, echo=FALSE}
+print("Does using option within curly braces work?")
+```
+
+Will it allow figure captions to be below the figure?
+
+```{r figure1}
+#| fig-cap-location: top
+#| fig-cap: This is the caption for an mtcars figure
+
+library(tidyverse)
+
+cars %>% 
+  ggplot(aes(x = speed, y = dist)) +
+  geom_point()
+
+```
+
+It indeed does, but only if `fig-cap-location: top` is specified in the YAML options, rather than in the chunk options.
+
+# Quarto Carpentry ([link](https://carpentries-incubator.github.io/reproducible-publications-quarto/))
+
+Sourcing an external R script directly in the Qmd document, then pulling its output
+
+```{r}
+#| fig-cap: How many diamonds of various qualities?
+#| fig-cap-location: margin
+
+source("w03_class2.R")
+
+smaller_plot
+```
+
+# Final word...
+
+Hat-tip to [Anita Simha](https://anitasimha.com/) for the idea.
+
+***WORK IN PROGRESS...***
+
+```{r big-richard}
+library(magick)
+
+bigshaq <- image_read("https://thefader-res.cloudinary.com/private_images/w_1440,c_limit,f_auto,q_auto:best/Big_Shaq_-_Press_Shot_2_gifakp/comedian-michael-dapaah-in-character-as-big-shaq.jpg")
+# bigshaq <- image_read("https://upload.wikimedia.org/wikipedia/en/2/27/Man%27s_Not_Hot_Artwork.png")
+richard <- image_read("https://gitlab.com/gklab/lab-admin/gklab.org/-/raw/main/content/people/richard/featured.jpg")
+
+
+# Get dimensions
+info_richard <- image_info(richard)
+width <- info_richard$width
+height <- info_richard$height
+half_height <- as.integer(height / 3)  # Convert to integer
+
+# Crop the top half of the first image
+top_half <- image_crop(richard, geometry = sprintf("%dx%d+0+0", width, half_height))
+
+info_bigshaq <- image_info(bigshaq)
+width <- info_bigshaq$width
+height <- info_bigshaq$height
+half_height <- as.integer(height * 1/4)
+
+# Crop the bottom half of the second image
+bottom_half <- image_crop(bigshaq, geometry = sprintf("%dx%d+0+%d", width, half_height, half_height))
+
+# Stack the images vertically
+combined <- image_append(c(top_half, bottom_half), stack = TRUE)
+
+# Display the result
+print(combined)
+
+```
+
