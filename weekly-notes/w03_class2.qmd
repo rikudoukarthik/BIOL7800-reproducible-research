@@ -4,6 +4,7 @@ date: "2025-01-30"
 format: html
 toc: true
 fig-cap-location: top
+embed-resources: true
 editor_options: 
   chunk_output_type: console
 ---
@@ -57,6 +58,8 @@ Will it allow figure captions to be below the figure?
 ```{r figure1}
 #| fig-cap-location: top
 #| fig-cap: This is the caption for an mtcars figure
+#| message: false
+#| echo: false
 
 library(tidyverse)
 
@@ -83,11 +86,16 @@ smaller_plot
 
 # Final word...
 
-Hat-tip to [Anita Simha](https://anitasimha.com/) for the idea.
-
-***WORK IN PROGRESS...***
+> Man's not hot
+> 
+> --- Big Richard
 
 ```{r big-richard}
+#| echo: false
+#| message: false
+#| fig-cap: Hat-tip to [Anita Simha](https://anitasimha.com/) for the idea.
+#| fig-cap-location: margin
+
 library(magick)
 
 bigshaq <- image_read("https://thefader-res.cloudinary.com/private_images/w_1440,c_limit,f_auto,q_auto:best/Big_Shaq_-_Press_Shot_2_gifakp/comedian-michael-dapaah-in-character-as-big-shaq.jpg")
@@ -105,18 +113,22 @@ half_height <- as.integer(height / 3)  # Convert to integer
 top_half <- image_crop(richard, geometry = sprintf("%dx%d+0+0", width, half_height))
 
 info_bigshaq <- image_info(bigshaq)
-width <- info_bigshaq$width
+width_match_richard <- info_bigshaq$width - info_richard$width
 height <- info_bigshaq$height
-half_height <- as.integer(height * 1/4)
 
 # Crop the bottom half of the second image
-bottom_half <- image_crop(bigshaq, geometry = sprintf("%dx%d+0+%d", width, half_height, half_height))
+bottom_half <- image_crop(bigshaq, 
+                          geometry = sprintf("%dx%d+%d+%d", 
+                                             info_richard$width, 
+                                             as.integer(height * 3/4), 
+                                             as.integer(width_match_richard/2),
+                                             as.integer(height * 1/4)))
 
 # Stack the images vertically
 combined <- image_append(c(top_half, bottom_half), stack = TRUE)
 
 # Display the result
-print(combined)
+combined
 
 ```
 
