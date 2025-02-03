@@ -3151,6 +3151,8 @@ Note
 <h2 class="anchored" data-anchor-id="paper-1">Paper 1</h2>
 <section id="full-citation" class="level3">
 <h3 class="anchored" data-anchor-id="full-citation">Full citation</h3>
+<!-- Tips on getting Quarto to insert full citation inline: https://doi.org/10.59350/hwwgk-v9636 -->
+<p><span class="citation" data-cites="fjeldsa2012">Fjeldså, J., Bowie, R. C. K., &amp; Rahbek, C. (2012). The Role of Mountain Ranges in the Diversification of Birds. <em>Annual Review of Ecology, Evolution, and Systematics</em>, <em>43</em>(1), 249–265. <a href="https://doi.org/10.1146/annurev-ecolsys-102710-145113">https://doi.org/10.1146/annurev-ecolsys-102710-145113</a></span></p>
 </section>
 <section id="descriptions" class="level3">
 <h3 class="anchored" data-anchor-id="descriptions">Descriptions</h3>
@@ -3603,43 +3605,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
           }
         });
       }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
-      }
-    } else {
-      return undefined;
-    }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
-          }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
-      });
-    }
-  }
 });
 </script>
 </div> <!-- /content -->

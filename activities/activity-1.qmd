@@ -4,6 +4,11 @@ author: Karthik Thrikkadeeri
 date: 2025-02-03
 toc: true
 embed-resources: true
+csl: ../apa-cv.csl
+bibliography: ../PhD.json
+suppress-bibliography: true
+link-citations: false
+citations-hover: false
 format: html
 ---
 
@@ -29,7 +34,9 @@ Identify *five primary research papers* that you feel are important for you to k
 
 ### Full citation
 
+<!-- Tips on getting Quarto to insert full citation inline: https://doi.org/10.59350/hwwgk-v9636 -->
 
+@fjeldsa2012
 
 ### Descriptions
 
