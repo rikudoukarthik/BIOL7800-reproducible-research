@@ -1,25 +1,17 @@
-# Activity 1 {.unnumbered}
+---
+title: Activity 1
+author: Karthik Thrikkadeeri
+date: 2025-02-03
+toc: true
+embed-resources: true
+format: html
+---
 
-:::{.callout-tip collapse=true}
-### Complete this activity as a `qmd` file and email the source code, along with the rendered `html`, to Gaurav before class on 04 Feb 2025.
-
-- Save the [`.qmd` source code](https://gitlab.com/gklab/teaching/reproducible-research-s25/-/raw/main/activities/activity-1.qmd) for this file to your local directory.  
-- Edit the document with your responses to the questions, and render the document into an `html` file.
-- Email the source `qmd` file as well as the rendered `html` to Gaurav. 
-
-*Note: if all else fails, you can send this activity to me as a Word or PDF file.*
-
-*Grading*: Each paper (or dataset, for undergraduate students) you describe is worth 5 points.
-
-:::
-
-
-
-## Instructions for graduate students
-
-Ideintify *five primary research papers* that you feel are important for you to know inside-and-out as part of your dissertation research, and which you feel might be good candidates for our course [semester project](semester-project/overview.qmd). For each paper, complete the following information: 
+Overview of the task:
 
 :::{.callout-note}
+
+Identify *five primary research papers* that you feel are important for you to know inside-and-out as part of your dissertation research, and which you feel might be good candidates for our course [semester project](https://rr.gklab.org/semester-project/overview). For each paper, complete the following information: 
 
 - Full article citation: 
 
@@ -31,19 +23,94 @@ Ideintify *five primary research papers* that you feel are important for you to 
 
 :::
 
+***
 
-## Instructions for undergraduate students
+## Paper 1
 
-Identify five biological datasets from [this repository](https://retriever.readthedocs.io/en/latest/datasets_list.htm)^[If nothing here interests you, you are welcome to explore additional data archives through [this link](https://libguides.cmich.edu/lifesciencedata/ecological)] that you would like to explore in your semester project. For each of the five datasets, address the following questions: 
+### Full citation
 
-:::{.callout-note}
 
-- Name and source of dataset: 
 
-- Why was this dataset originally collected? (I.e. what questions were the authors exploring when collecting these data?)
+### Descriptions
 
-- What is the type of data available? Describe both the technical features of the files (e.g. "a CSV table with 10 columns and 950 rows"), and the contents themselves (e.g. "columns 2 and 3 describe the latitude and longitude; column 4 describes the species name, [...]")
 
-- Brainstorm 1--2 figures that you would like to create with these data.^[If you are stuck, consider exploring the [R graph gallery](https://r-graph-gallery.com/) to explore different ways to visualize data]
 
-:::
+### Data/code availability
+
+
+
+### Reproduction steps
+
+
+
+## Paper 2
+
+### Full citation
+
+
+
+### Descriptions
+
+
+
+### Data/code availability
+
+
+
+### Reproduction steps
+
+
+
+## Paper 3
+
+### Full citation
+
+
+
+### Descriptions
+
+
+
+### Data/code availability
+
+
+
+### Reproduction steps
+
+
+
+## Paper 4
+
+### Full citation
+
+
+
+### Descriptions
+
+
+
+### Data/code availability
+
+
+
+### Reproduction steps
+
+
+
+## Paper 5
+
+### Full citation
+
+
+
+### Descriptions
+
+
+
+### Data/code availability
+
+
+
+### Reproduction steps
+
+
