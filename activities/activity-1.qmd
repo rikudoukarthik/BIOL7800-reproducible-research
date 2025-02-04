@@ -36,88 +36,103 @@ Identify *five primary research papers* that you feel are important for you to k
 
 <!-- Tips on getting Quarto to insert full citation inline: https://doi.org/10.59350/hwwgk-v9636 -->
 
-@fjeldsa2012
+@arellano2014
 
 ### Descriptions
 
-
+a. **Motivation**: The primary objective of this study was to quantify two-dimensional commonness (abundance and distribution), continuously rather than categorically, in different types of tropical forests in Madidi, Bolivia, and to then compare commonness patterns at different scales with factors such as elevation and species pool size. 
+b. **Data generated**: For this study, the authors used floristic data collected over the course of 12 years of standardised floristic inventories in Madidi, a region on the eastern slope of the Bolivian Andes. The dataset contains information on ca 122,000 individual plants spread across 407 0.1 ha plots, and comprises not only species-level information but also plot-level vegetation type assignments.
+c. **Data analysis**: The authors developed a method of quantifying two-dimensional commonness using a modified form of the bibliometric tool, the *h* index. Their index is defined by the equation $h_p = f(h_p)$, where  $f$ could be any monotonically decreasing function. They then used this index to integrate two-dimensional species-based information into the community level, focusing on the three metrics: mean commonness of all species in the community, proportion of common species in the community, and mean commonness of common species (indicating dominance). They finally compared patterns in these metrics with variables such as size of the species pool, elevation, and forest type. The entire analysis was done using the R language, but there is no reference in the paper to any R package that was used for any step of the analytical pipeline. Although smaller parts of the analysis do reference code in the Supplementary Material, and therefore have some clues as to the packages used, these are only for some, not all, isolated steps of the analysis.
+d. **Implications for my work**: My plans for my own thesis research are still very abstract, but I am interested in exploring various macroecological patterns. This study not only establishes a valid method of quantifying ecological metrics such as commonness, but also helps macroecological studies move their primary focus beyond the traditional metrics like diversity.
 
 ### Data/code availability
 
-
+The authors have not made data or code fully available. Although the [Supplemental Material](http://www.ecography.org/sites/ecography.org/files/appendix/ecog-00546.pdf) lists two R functions to calculate their index, as well as a table of their "common" species along with the index values, these are the end-products, and are not sufficient to reproduce their analysis from the start. 
 
 ### Reproduction steps
 
-
+I would have to first contact the authors directly and ask for access to the full raw dataset, whose modification history will be tough to ascertain. If they still have their original R scripts, I could ask them to share those as well, which would make reproducing the steps possible after updating file path references, package specifications, etc. (assuming the pipeline starting from raw data is programmatic). If they don't, I would have to create the pipeline from scratch, following the methodological steps outlined in the paper.
 
 ## Paper 2
 
 ### Full citation
 
-
+@freeman2015
 
 ### Descriptions
 
-
+a. **Motivation**: The main motivation of this study was to better understand what drives the marked elevational stratification in tropical montane birds, by comparing three major mechanistic possibilities: stochasticity, ecological sorting of allopatric divergence, and competitive interactions upon secondary contact.
+b. **Data generated**: The author first collated a dataset of montane sister species pairs, using existing phylogenetic data (taking care to choose the latest one if multiple datasets existed for the same clade). Then, for each such pair, he calculated a measure of elevational divergence ranging from zero to one, and also categorised geographical overlap as sympatric or allopatric based on digital distribution maps and field guides. Finally, for each sister species pair, he calculated uncorrected sequence divergence ($p$ distances) using homologous mitochondrial DNA sequences from GenBank.
+c. **Data analysis**: The hypotheses were tested using simple linear regressions, and relative performances of the competing models were gauged using the corrected Akaike Information Criterion (AIC_c_) which formed the model selection process. Genetic distance calculation was done using the MEGA5 software, and all other analyses were done using R; model selection and model averaging were done using the MuMIn package.
+d. **Implications for my work**: This study identifies the major driver of a major macroecological phenomenon---elevational stratification---as being competitive interactions upon secondary contact (sympatry). Although these results apply across multiple biogeographic regions (Neotropics, New Guinea, Himalaya), the complete refutation of the stochastic and ecological sorting hypotheses would require establishing these general patterns more broadly and robustly. And more generally, this study is an example of how simple ecological questions of large scale can be answered using relatively simple but large datasets.
 
 ### Data/code availability
 
-
+The final dataset is [available on Dryad](https://datadryad.org/stash/dataset/doi:10.5061/dryad.6qg3g), but no code has been made available.
 
 ### Reproduction steps
 
-
+Reproducing the entire analysis would require access to the raw data, for which I would have to contact the author. However, the final dataset on Dryad is sufficient to directly test the competing hypotheses, by first creating the various models, then performing model selection, and finally averaging the best-performing models---which are the key results of this study. 
 
 ## Paper 3
 
 ### Full citation
 
-
+@montano-centellas2020
 
 ### Descriptions
 
-
+a. **Motivation**: The study aimed to explore patterns in functional and phylogenetic diversity along multiple elevational gradients across the world. It also looked for signals of the deterministic processes driving these patterns, and the variation of the strength of these processes across latitudes.
+b. **Data generated**: The authors compiled datasets on bird assemblages along elevational gradients satisfying a set of criteria. (Individual datasets were obtained by downloading from online materials, or by contacting authors directly.) For each species, elevational range was calculated from the highest and lowest elevation of reporting, using range interpolation. Finally, each elevational gradient was also divided into 100 m elevational bands with their own assemblages. For each species, functional traits (EltonTraits) and phylogenetic data (birdtree.org) were also compiled.
+c. **Data analysis**: Functional and phylogenetic diversity were quantified using one metric each for richness ($FRic$, $PD$) and one each for dispersion ($FDis$, $MPD$). These metrics were calculated at the assemblage level, and then elevational patterns were tested using quadratic regressions. Further, to test for signals of deterministic processes of community assembly, standardised effect sizes of the functional and phylogenetic diversity patterns (how much more clustered or dispersed than expected by chance) were modelled against normalised elevation (using a quadratic linear mixed-effects model). Latitudinal effects were tested using a two-stage mixed-effect model. The analyses were all done in the R environment, and used packages such as FD (functional diversity steps), phytools (phylogenetic steps), metafor (two-stage mixed-effect modelling).
+d. **Implications for my work**: This study showed that the general expectation of decreasing functional and phylogenetic diversity with increasing elevation is not generalisable across all elevational gradients; instead, there is great variation across mountain systems, thus highlighting the need for context-dependent approaches and interpretations. Ultimately, this also shows that there is much more to be explored in this field of inquiry.
 
 ### Data/code availability
 
-
+The modified data (with bird diversity metrics) used in the analyses have been [deposited in Dryad](https://doi.org/10.1111/geb.13021), but raw data would need to be obtained from either the original sources or from the authors via personal request. The codebase is not available.
 
 ### Reproduction steps
 
-
+I would have to code the various analytical steps from scratch, using the details in the Methods section of the paper. 
 
 ## Paper 4
 
 ### Full citation
 
-
+@coelho2023
 
 ### Descriptions
 
-
+a. **Motivation**: The study aimed to understand the effect of size and fragmentation of climates on biodiversity.
+b. **Data generated**: The study compiled range map data of amphibians (IUCN), mammals (IUCN), birds (BirdLife), and squamates (GARD internal version 1.5). For describing the climatic space, data on bioclimatic variables ([CHELSA bioclim](https://chelsa-climate.org/ bioclim/)) and potential evapotranspiration ([CGIAR CSI](https://cgiarcsi.community/)) were also obtained.
+c. **Data analysis**: To create their two-dimensional climatic space, the authors obtained the first two principal components (explaining 80% of global climate variation) of the correlation matrix of averaged bioclimatic variables. Climate information was linked with species information at the level of 110 km grids. The effects of climate and geography of climate on species richness were tested using generalised linear and additive models
+d. **Implications for my work**: Much of macroecology focuses on the impacts of climate on biodiversity, but this study shows that it is not sufficient to consider only climate itself, and that the geography of climate should also be incorporated in analyses and questions. 
 
 ### Data/code availability
 
-
+The modified/processed datasets used in the analyses are [available as Supplementary Material](https://www.nature.com/articles/s41586-023-06577-5#Sec10). Code for "the primary statistical analysis detailed in the manuscript" are also available in the supplement, as a single `.R` script, but this only reproduces the *outputs*, like model results and figures. 
 
 ### Reproduction steps
 
-
+The authors claim that the results of their study can be replicated using the supplemental R script "used in conjunction with the datasets provided as Supplementary Data 1". 
 
 ## Paper 5
 
 ### Full citation
 
-
+@fjeldsa2012
 
 ### Descriptions
 
-
+a. **Motivation**: This study aimed to show that the high species richness of low-latitude mountains (caused by aggregation of many small-ranged species) is due to not just high speciation rates but also to high persistence (i.e., low extinction rates). The authors compiled various individual datasets and analysed this to argue for the importance of stability of local conditions in generating high biodiversity. 
+b. **Data generated**: The authors compiled data on montane areas and their biodiversity using several of their own past work from the tropical Andes, Afromontane, Indo-Pacific, and Sino-Himalayan Montane regions. They used GIS modelling to create a spatial dataset of montane areas of the world. They also compiled a global distribution database at 1\u00b0 $\times$ 1\u00b0 resolution, for all passerine birds of the world. For densely sampled species groups, the authors compiled divergence data for mitochrondrial DNA from over 150 publications. 
+c. **Data analysis**: The authors visualised global patterns in diversification by plotting species richness for recent and ancient lineages separately; cell-to-cell species replacement rates; and cell-wise richness of range-restricted species in montane areas. For each species, time since most recent common ancestor (TMRCA) was calculated from the phylogenetic data, and visually compared against upper elevational range data from multiple sites. Correlation analysis was done for range size versus TMRCA for a subgroup of birds. There is no information about what software was used for the analysis.
+d. **Implications for my work**: This study provided a comprehensive review of what was known (at the time, in 2012) about the role of mountain ranges in shaping biodiversity. It highlights the importance of not just contemporary ecological processes, but also evolutionary contexts, in shaping macroecological patterns. It also emphasises the need to consider topographical complexity when studying mountain systems.
 
 ### Data/code availability
 
-
+There is no data or code available.
 
 ### Reproduction steps
 
-
+Reproduction of the steps in this study seem much more difficult compared with the other four studies, given the variety of data sources and analysis/visualisation methods used as well as due to it being a review and not a primary research work. Since the analyses seem to have been done on an ad-hoc basis, i.e., to support synthetical statements from existing literature, it is difficult to retrace an analytical pipeline. Considering the fact that there is no mention of data or code availability, either in the paper or on the webpage, and considering that this was from the year 2012, it seems difficult to obtain the original scripts used in this study (assuming the authors used a programmatic data analysis workflow), even if the original dataset can be obtained. Descriptions of the analyses/visualisations are not sufficiently specific and cohesive to allow for creating the code from scratch.
