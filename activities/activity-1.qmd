@@ -4,6 +4,10 @@ author: Karthik Thrikkadeeri
 date: 2025-02-04
 toc: true
 embed-resources: true
+# execute-dir in .yml (https://quarto.org/docs/projects/code-execution.html#working-dir) not behaving as expected
+# potentially related issues: 
+# - https://github.com/quarto-dev/quarto-cli/issues/9649
+# - https://github.com/quarto-dev/quarto-cli/discussions/9667
 csl: ../apa-cv.csl
 bibliography: ../PhD.json
 suppress-bibliography: true
