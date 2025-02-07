@@ -1,0 +1,62 @@
+# Activity 2 {.unnumbered}
+
+:::{.callout-tip collapse=true}
+### Commit this activity to your reproducible research github repository before class on 18 Feb 2025. Expand this box for submission instructions.
+
+- Save the [`.qmd` source code](https://gitlab.com/gklab/teaching/reproducible-research-s25/-/raw/main/activities/activity-2.qmd) for this file to your local directory, which you now should be tracking with git (and pushing changes to github).  
+- Edit the document with your responses to the questions, and render the document into an `html` file.
+- Use `git add`, `git commit`, and `git push` to save and publish your changes to your public repository on github.
+
+*Grading*: Each question is worth 5 points, and an additional 5 points will be awarded for pushing this file to a well-structured public repository on Github.
+
+:::
+
+***
+
+**1**. As you move through your career, to what extent do you feel it important that your research embraces an ethos of openness and reproducibility? What benefits do you expect to derive from learning and using these approaches/tools? What are some costs you can envision to learning and using them? 
+
+**2**. Choose two academic journals in your research field, and read each journal's policy on data and code archiving.^[Note that these are often found within the journals "Author contribution guidelines"] Then, for each journal, identify five primary research articles (i.e. not review papers, opinion pieces, etc.) that were published since 2020, and gather the following information:
+
+
+:::{.callout-note appearance="minimal"}
+
+**Journal 1 name:**  
+
+**Text of journal's data/code archiving statement**: 
+
+
+**Article 1**:  
+  - Include an in-line citation to the paper following the `@author_year` notation.  
+  
+  - DOI link:   
+  - Type of data used for the study:  
+  - Type of data made available to the public (include click-able link):  
+  - Type of analysis conducted for the study:  
+  - Type of analysis made available to the public (include click-able link):  
+
+  
+*Repeat this for five articles per journal, and two journals*. 
+
+::: 
+
+**3**. Schedule a meeting with your major advisor(s) and/or a senior lab member to discuss their experiences and attitudes towards reproducible and open science.^[If you are an undergraduate student not currently working in a research lab, please contact Gaurav, and he will help you connect with a potential professor/postdoc with whom to have this discussion.] For example, you can choose to structure your conversations around the following questions: 
+
+:::{.callout-note}
+- What tools does your advisor/lab use for collaborative data analysis/writing? What are some strengths and limitations of these tools?
+- What are the different sources/types of data that are generated/analyzed in your lab? What are the software tools that your lab uses for data visualization, analysis, and writing? Are there tools that your lab doesn't currently use that you feel would be useful additions? 
+- Is there a lab policy towards data and/or code sharing upon paper submission/acceptance? 
+- What are the lab's policies for long--term data archiving? 
+- Are there tools/skills/approaches in your subfield that your advisor suggests you adopt in addition to the tools we will cover in this course? 
+:::
+
+
+**4**. Review the content covered in the first four weeks of the course. Pick one approach/idea/tool that stood out to you as being especially helpful for your career, and answer the following:
+ 
+:::{.callout-note}
+- What approach/idea/tool have you selected, and why do you feel it might be especially relevant for your work? 
+- Use your favorite search engines to identify three resources (e.g. workshops, publications using that tool, youtube demo, ebook etc.) that you can use for a deeper dive.
+  - Identify a few features of this approach/idea/tool that you can envision using in your work, and illustrate its use through an example. 
+:::
+
+
+
