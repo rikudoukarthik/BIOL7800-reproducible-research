@@ -1,0 +1,116 @@
+---
+title: Data visualisation
+embed-resources: false
+execute:
+  echo: false
+  warning: false
+editor_options: 
+  chunk_output_type: console
+---
+
+# Lecture
+
+Check the `gapminder` dataset.
+
+```{r}
+library(gapminder)
+
+head(gapminder)
+```
+
+For simplicity, filter the data.
+
+```{r}
+library(tidyverse)
+
+biggest <- gapminder |> 
+  filter(year == 2007) |> 
+  arrange(-pop) |> 
+  head()
+
+gapminder_big <- 
+  gapminder |> 
+  filter(country %in% biggest$country)
+```
+
+Map country to color; Year to X-axis, Life Expectancy to Y-axis.
+
+```{r}
+gapminder_big %>% 
+  ggplot(aes(x = year, y = lifeExp, colour = country)) +
+  geom_point()
+```
+
+Map year to color; per-capita GDP to X-axis, Life Expectancy to Y-axis.
+
+```{r}
+gapminder_big |> 
+  ggplot(aes(color = year, x = gdpPercap, y = lifeExp, group = country)) + 
+  geom_point()
+```
+
+Map country to color; Year to X-axis, Life Expectancy to Y-axis. Show lines for each entry.
+
+```{r}
+gapminder_big |> 
+  ggplot(aes(color = country, x = year, y = lifeExp)) + 
+  geom_line()
+```
+
+Map country to color; Year to X-axis, Life Expectancy to Y-axis. Show lines *and points* for each entry.
+
+```{r}
+gapminder_big |> 
+  ggplot(aes(color = country, x = year, y = lifeExp)) + 
+  geom_line() + 
+  geom_point()
+```
+
+Map country to color; Year to X-axis, Life Expectancy to Y-axis. Show lines *and points* for each entry. Scale the colours manually.
+
+```{r}
+gapminder_big |> 
+  ggplot(aes(color = country, x = year, y = lifeExp)) + 
+  geom_line() + 
+  geom_point() + 
+  scale_color_manual(values = c("red", "orange", "yellow", 
+                                "blue", "green", "purple"))
+```
+
+# Practice
+
+First, it's interesting to see how many individuals of each sex were sampled for each penguin species.
+
+```{r, echo=TRUE}
+library(palmerpenguins)
+
+penguins %>% 
+  ggplot(aes(x = sex, fill = sex), colour = NA) +
+  facet_wrap(~ species) +
+  geom_histogram(stat = "count") +
+  theme_classic()
+```
+
+Now let's see if any of this data can be animated.
+
+First, let's visualise how sampling proceeded.
+
+```{r, echo=TRUE}
+library(gganimate)
+
+penguins_anim <- penguins %>% 
+  group_by(year, island, species) %>% 
+  reframe(count = n()) %>% 
+  complete(species, year, island, fill = list(count = 0)) %>% 
+  group_by(year, island) %>% 
+  mutate(n.spec = n_distinct(species))
+
+penguins_anim %>% 
+  ggplot(aes(x = island, y = count, fill = species), colour = NA) +
+  geom_col(position = position_dodge()) +
+  theme_classic() +
+  transition_time(year) +
+  labs(title = "Year: {frame_time}")
+```
+
+
