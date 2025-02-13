@@ -1,0 +1,224 @@
+---
+title: Extending geoms in ggplot2 
+embed-resources: false
+execute:
+  echo: false
+  warning: false
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(tidyverse)
+```
+
+Going through the [Case study chapter](https://ggplot2-book.org/ext-springs) of the new [ggplot2 online book](https://ggplot2-book.org/).
+
+The objective is to think through the process of creating a new "custom" geom. The example they use is that of a spring.
+
+A simple approach using 100 points:
+
+```{r}
+
+circle <- tibble(
+  radians = seq(0, 2 * pi, length.out = 100), # radius = 1 (2 pi r)
+  x = cos(radians),
+  y = sin(radians),
+  index = 1:100,
+  type = "circle"
+)
+
+ggplot(circle, aes(x = x, y = y, alpha = -index)) + 
+  geom_path(show.legend = FALSE) + 
+  coord_equal()
+```
+
+To transform this into a spring, we create a vector of small values to add to our x values:
+
+```{r}
+spring <- circle %>% 
+  mutate(motion = seq(0, 1, length.out = 100),
+         x = x + motion,
+         type = "spring")
+
+ggplot(spring, aes(x = x, y = y, alpha = -index)) + 
+  geom_path(show.legend = FALSE) + 
+  coord_equal()
+```
+
+A good way to decide whether a new ggproto object we create should be a `Stat` or `Geom` is to ask whether we can achieve what we want using an existing `geom_*` with just data manipulations; if so, `Stat` might be better because it's easier to code.
+
+Let's now create a new function to create such springs:
+
+```{r}
+create_spring <- function(x, 
+                          y, 
+                          xend, 
+                          yend, 
+                          diameter = 1, 
+                          tension = 0.75, 
+                          n = 50) {
+  
+  # Validate the input arguments
+  if (tension <= 0) {
+    rlang::abort("`tension` must be larger than zero.")
+  }
+  if (diameter == 0) {
+    rlang::abort("`diameter` can not be zero.")
+  }
+  if (n == 0) {
+    rlang::abort("`n` must be greater than zero.")
+  }
+  
+  # Calculate the direct length of the spring path
+  length <- sqrt((x - xend)^2 + (y - yend)^2)
+  
+  # Calculate the number of revolutions and points we need
+  n_revolutions <- length / (diameter * tension)
+  n_points <- n * n_revolutions
+  
+  # Calculate the sequence of radians and the x and y offset values
+  radians <- seq(0, n_revolutions * 2 * pi, length.out = n_points)
+  x <- seq(x, xend, length.out = n_points)
+  y <- seq(y, yend, length.out = n_points)
+  
+  # Create and return the transformed data frame
+  data.frame(
+    x = cos(radians) * diameter/2 + x,
+    y = sin(radians) * diameter/2 + y
+  )
+}
+
+create_spring(0, 0, 3, 3) %>% 
+  ggplot() +
+  geom_path(aes(x = x, y = y)) +
+  coord_equal()
+```
+
+Let's now turn this into a `Stat`.
+
+```{r}
+StatSpring <- ggproto("StatSpring", Stat, 
+  
+  # Edit the input data to ensure the group identifiers are unique
+  setup_data = function(data, params) {
+    if (anyDuplicated(data$group)) {
+      data$group <- paste(data$group, seq_len(nrow(data)), sep = "-")
+    }
+    data
+  },
+  
+  # Construct data for this panel by calling create_spring()
+  compute_panel = function(data, 
+                           scales, 
+                           n = 50) {
+    cols_to_keep <- setdiff(names(data), c("x", "y", "xend", "yend"))
+    springs <- lapply(
+      seq_len(nrow(data)), 
+      function(i) {
+        spring_path <- create_spring(
+          data$x[i], 
+          data$y[i], 
+          data$xend[i], 
+          data$yend[i], 
+          data$diameter[i], 
+          data$tension[i], 
+          n
+        )
+        cbind(spring_path, unclass(data[i, cols_to_keep]))
+      }
+    )
+    do.call(rbind, springs)
+  },
+  
+  # Specify which aesthetics are required input
+  required_aes = c("x", "y", "xend", "yend"),
+  optional_aes = c("diameter", "tension")
+)
+```
+
+We now proceed to creating *constructor functions*:
+
+```{r}
+geom_spring <- function(mapping = NULL,
+                        data = NULL, 
+                        stat = "spring",
+                        position = "identity", 
+                        ..., 
+                        n = 50, 
+                        arrow = NULL, 
+                        lineend = "butt", 
+                        linejoin = "round",
+                        na.rm = FALSE, 
+                        show.legend = NA, 
+                        inherit.aes = TRUE
+                        ) {
+  layer(
+    data = data,
+    mapping = mapping,
+    stat = stat,
+    geom = GeomPath,
+    position = position,
+    show.legend = show.legend,
+    inherit.aes = inherit.aes,
+    params = list(
+      n = n,
+      arrow = arrow,
+      lineend = lineend,
+      linejoin = linejoin,
+      na.rm = na.rm,
+      ...
+    )
+  )
+}
+
+stat_spring <- function(mapping = NULL, 
+                        data = NULL, 
+                        geom = "path", 
+                        position = "identity", 
+                        ..., 
+                        n = 50, 
+                        na.rm = FALSE, 
+                        show.legend = NA, 
+                        inherit.aes = TRUE) {
+  layer(
+    data = data, 
+    mapping = mapping, 
+    stat = StatSpring, 
+    geom = geom, 
+    position = position, 
+    show.legend = show.legend, 
+    inherit.aes = inherit.aes, 
+    params = list(
+      n = n, 
+      na.rm = na.rm, 
+      ...
+    )
+  )
+}
+```
+
+Now let's test it out!
+
+```{r}
+df <- tibble(
+  x = runif(5, max = 10),
+  y = runif(5, max = 10),
+  xend = runif(5, max = 10),
+  yend = runif(5, max = 10),
+  class = sample(letters[1:2], 5, replace = TRUE),
+  tension = runif(5),
+  diameter = runif(5, 0.5, 1.5)
+)
+
+ggplot(df, aes(x = x, y = y, xend = xend, yend = yend)) + 
+  geom_spring(aes(tension = tension, diameter = diameter, colour = class),
+              linewidth = 1) +
+  coord_equal()
+
+ggplot(df) + 
+  stat_spring(aes(x = x, y = y, xend = xend, yend = yend, colour = class),
+              geom = "point") +
+  coord_equal()
+```
+
