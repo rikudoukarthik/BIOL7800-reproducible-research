@@ -1,4 +1,14 @@
-# Activity 2 {.unnumbered}
+---
+title: Activity 2
+author: Karthik Thrikkadeeri
+date: 2025-02-18
+toc: true
+number-sections: true
+embed-resources: true
+bibliography: activity-2-ref.bib
+theme: sandstone
+format: html
+---
 
 :::{.callout-tip collapse=true}
 ### Commit this activity to your reproducible research github repository before class on 18 Feb 2025. Expand this box for submission instructions.
@@ -13,21 +23,33 @@
 
 ***
 
-**1**. As you move through your career, to what extent do you feel it important that your research embraces an ethos of openness and reproducibility? What benefits do you expect to derive from learning and using these approaches/tools? What are some costs you can envision to learning and using them? 
-
-**2**. Choose two academic journals in your research field, and read each journal's policy on data and code archiving.^[Note that these are often found within the journals "Author contribution guidelines"] Then, for each journal, identify five primary research articles (i.e. not review papers, opinion pieces, etc.) that were published since 2020, and gather the following information:
-
+## Ethos, benefits, costs
 
 :::{.callout-note appearance="minimal"}
 
-**Journal 1 name:**  
+As you move through your career, to what extent do you feel it important that your research embraces an ethos of openness and reproducibility? What benefits do you expect to derive from learning and using these approaches/tools? What are some costs you can envision to learning and using them? 
+
+:::
+
+I am quite early in my career, and I started embracing the ethos relatively early, which in some ways simplifies things for me. At this point, openness and reproducibility are very important to me and are things that I often think about while carrying out my research. I have spent the last few years exploring different tools and approaches that I can integrate into my workflows in order to make my research and outputs open, accessible and reproducible. 
+
+I see many benefits to embracing the ethos, many of which are inward, or ["selfish"](https://rr.gklab.org/pdf/Markowetz_2015_GenomeBiol_selfish.pdf), reasons that ultimately make our workflows more seamless, efficient and reliable. There are also benefits for the scientific community more broadly---justifying to me why this is something the community should collectively strive towards---such as improving robustness and reliability of our science as well as accessibility to it, encouraging better collaborative research, etc.
+
+There generally are non-negligible costs to learning and adopting these tools and approaches, especially for those who are at later stages in their career. The learning curves of most tools are steep, and the returns on time invested are usually not evident for a while. Moreover, since many of these approaches are not the status quo, another challenge might be figuring out how to incorporate them into one's workflow when others around, like collaborators, are new to them. Even for those who are not completely new to the tools and approaches, just embracing them can have associated costs as well, like in terms of time. However, I am personally convinced that the benefits outweigh the costs.
+
+## Journal policies & articles
+
+:::{.callout-note appearance="minimal"}
+
+Choose two academic journals in your research field, and read each journal's policy on data and code archiving. Then, for each journal, identify five primary research articles (i.e. not review papers, opinion pieces, etc.) that were published since 2020, and gather the following information:
+
+**Journal 1 name**: 
 
 **Text of journal's data/code archiving statement**: 
 
-
 **Article 1**:  
+
   - Include an in-line citation to the paper following the `@author_year` notation.  
-  
   - DOI link:   
   - Type of data used for the study:  
   - Type of data made available to the public (include click-able link):  
@@ -37,28 +59,176 @@
   
 *Repeat this for five articles per journal, and two journals*. 
 
-::: 
+:::
 
-**3**. Schedule a meeting with your major advisor(s) and/or a senior lab member to discuss their experiences and attitudes towards reproducible and open science.^[If you are an undergraduate student not currently working in a research lab, please contact Gaurav, and he will help you connect with a potential professor/postdoc with whom to have this discussion.] For example, you can choose to structure your conversations around the following questions: 
+### Journal 1
 
-:::{.callout-note}
+**Name:** Ecology Letters
+
+**Archiving statement:**
+
+> 19. DATA AND CODE AVAILABILITY
+> 
+> Data and code are important products of scientific enterprise, and they must be preserved and remain accessible in future decades.
+> 
+> For manuscripts that depend on new or existing data, and/or on code written by the authors, Ecology Letters requires that this material be supplied and accessible to editors and reviewers at the time of submission, and permanently archived in an accessible repository before publication. This means that prior to submission, you will need to prepare your raw data (or the subset of existing data that was used), metadata, code and derived data products, archive this material in an external repository that editors and reviewers can access, and include a clear README file that will ensure accessibility and readability. This will allow us to properly assess your work and confirm that the archive is complete and usable. ...
+> 
+> Ecology Letters requires that the **raw data** (or subset of existing data) used to generate the results in the paper are archived in public repositories such as: Dryad, Figshare, Hal, Zenodo, NERC Environmental Data Service, OSF, US federal agency repositories, Environmental Data Initiative (EDI), DataONE, or a similar repository which assigns permanent unique DOIs. If you are in doubt as to whether your chosen repository is acceptable, please contact the Editorial Office in the first instance. Data should not be uploaded alongside your submission as a supporting document. ...
+> 
+> **Computer code** used to produce the figures and conduct analyses or simulations must also be archived in a public repository (e.g., Zenodo, Figshare). Code should not be uploaded with your submission as a supporting document. All code must be annotated so readers can understand what each segment or function does. If figures have been generated in a program such as Excel, the Excel file including the figure and the data must be archived. Further guidance is available at https://authorservices.wiley.com/author-resources/Journal-Authors/open-access/data-sharing-citation/index.html.
+> 
+> [...](https://onlinelibrary.wiley.com/page/journal/14610248/homepage/forauthors.html#data-availability)
+
+**Article 1:**
+
+- Citation: @tobias2022
+- DOI: https://doi.org/10.1111/ele.13898
+- Data used: Morphological traits (measurements & merged independent datasets), three taxonomies, EltonTraits [@wilman2014], BirdLife International range maps
+- [Data available](https://figshare.com/s/b990722d72a26b5bfead?file=38429873): Final AVONET dataset linked with three taxonomies, raw data with species averages 
+- Analyses conducted: Trait averaging at species-level, basic regressions during data curation/validation steps, mapping species across three taxonomies
+- [Analyses available](https://figshare.com/s/b990722d72a26b5bfead?file=38429885): analyses and visualisations included directly in manuscript, but not sure about smaller ones listed above
+
+**Article 2:**
+
+- Citation: @graham2024
+- DOI: https://doi.org/10.1111/ele.14454
+- Data used: 28-year coral reef monitoring dataset, benthic & fish community dataset, remotely sensed daily sea surface temperature data
+- [Data available](https://zenodo.org/records/10160996): All
+- Analyses conducted: Bayesian models & multivariate approaches for temporal trends
+- [Analyses available](https://zenodo.org/records/10160996): All
+
+**Article 3:**
+
+- Citation: @rawstern2025
+- DOI: https://doi.org/10.1111/ele.70031
+- Data used: Whole community microbiome data, DNA extracts from soil samples
+- [Data available](https://zenodo.org/records/14056956): All
+- Analyses conducted: denovo clustered cross-domain microbiome network (for metrics of rarity, specialisation, centrality), evaluating robustness of network construction microbiome DNA sequencing, diversity, richness & evenness, modelling and model selection, PERMANOVA & ANOVA
+- [Analyses available](https://zenodo.org/records/14056956): Microbiome DNA sequencing (BLAST) and perhaps network construction, rest is likely missing. I'm not fully sure, since there are a large number of files and no clear documentation.
+
+**Article 4:**
+
+- Citation: @hennecke2025
+- DOI: https://doi.org/10.1111/ele.70032
+- Data used: Root trait measurements, genomic DNA, FungalTraits database, respiration data
+- [Data available](https://zenodo.org/records/13990357): Root trait measurements, respiration data
+- Analyses conducted: DADA2 DNA sequencing, PLFA analysis, PCA, linear mixed-effects models
+- [Analyses available](https://zenodo.org/records/13990357): All computational analyses (some listed above are lab analyses)
+
+**Article 5:**
+
+- Citation: @meacock2025
+- DOI: https://doi.org/10.1111/ele.70027
+- Data used: Microbial growth data, beta-lactamase assays
+- [Data available](https://zenodo.org/records/14068907): All
+- Analyses conducted: Simulations of spatially structured flowing systems (spatio-temporal model of abundances of species and intermediates)
+- [Analyses available](https://zenodo.org/records/14068907): All
+
+### Journal 2
+
+**Name:** Global Ecology and Biogeography
+
+**Archiving statement:**
+
+> DATA AND CODE PROVISION, STORAGE AND DOCUMENTATION
+> 
+> Global Ecology and Biogeography supports open research. Therefore, data and code supporting the results in the paper **must be accessible during peer review** and archived in an appropriate **stable public repository for publication**. To facilitate appropriate scrutiny during the peer review process, authors are required to provide a link to the data they have used in their data and code availability statement or provide it with their submission’s supplementary materials. They must also cite the data they have shared.
+> 
+> Scripts and software used to generate the analyses presented in the paper should also be publicly archived in a repository. Again, the links should be provided in the data and code availability statement.Examples of stable repositories include Dryad, TreeBASE, GenBank, Figshare, Zenodo and government data centres. Authors may also choose another stable archive, as long as it provides comparable access and guarantee of preservation. Please note that **private websites and GitHub do not meet the criteria of stability of access**.
+> 
+> [...](https://onlinelibrary.wiley.com/page/journal/14668238/homepage/forauthors.html)
+
+**Article 1:**
+
+- Citation: @biber2023
+- DOI: https://doi.org/10.1111/geb.13646
+- Data used: Global reptile range maps (GARD), global bias--corrected daily climate data (EartH2Observe, WFDEI and ERA-Interim data Merged and Bias-corrected for ISIMIP)
+- Data available: All ([global reptile range maps](https://datadryad.org/stash/dataset/doi:10.5061/dryad.83s7k), [global bias--corrected daily climate data](https://data.isimip.org/10.5880/pik.2019.004), [processed data](https://datadryad.org/stash/dataset/doi:10.5061/dryad.rn8pk0pgb))
+- Analyses conducted: Species distribution models (generalised additive model, generalised boosted regression model), principal components analysis
+- [Analyses available](https://datadryad.org/stash/dataset/doi:10.5061/dryad.rn8pk0pgb): All
+
+**Article 2:**
+
+- Citation: @bouchard2024
+- DOI: https://doi.org/10.1111/geb.13790
+- Data used: Ground-sourced forest inventory data (GFBI), TRY database [@kattge2020], precipitation, temperature and solar radiation data (WorldClim)
+- Data available: GFBI ([available on request](https://www.gfbinitiative.org/datarequest)), TRY ([available on request](https://www.try-db.org/TryWeb/Prop0.php)), community trait data and climate & pedological data available on FigShare but link provided is incomplete!
+- Analyses conducted: Linear regression with generalised variance inflation factors, bootstrapping for confidence, variable dominance analysis
+- Analyses available: None! Only results available in supplement.
+
+**Article 3:**
+
+- Citation: @marjakangas2024
+- DOI: https://doi.org/10.1111/geb.13816
+- Data used: Bird species occurrence (eBird), IUCN Red List trends and status data, BirdLife International species range maps, human pressure data (HFI)
+- Data available: Only general homepage links provided to eBird, IUCN Red List, and BirdLife International websites. HFI data not linked to. Only [processed tolerance data available on Dryad](https://datadryad.org/stash/dataset/doi:10.5061/dryad.83bk3jb08).
+- Analyses conducted: Generalised additive models, one-way ANOVA, phylANOVA
+- [Analyses available](https://datadryad.org/stash/dataset/doi:10.5061/dryad.83bk3jb08): All
+
+**Article 4:**
+
+- Citation: @hordijk2024
+- DOI: https://doi.org/10.1111/geb.13889
+- Data used: GFBI database, @condit2019, GBIF species names backbone, several remote sensed climate data, human population density (CIESIN), human development, IUCN Red List trends and threats data
+- Data available: Only results data ([tree community dominance](https://www.research-collection.ethz.ch/handle/20.500.11850/682380))
+- Analyses conducted: Community dominance and rarity, decision trees, random forest models, extent of occurrence
+- [Analyses available](https://github.com/IrisHordijk/Tree-dominance-and-rarity-across-global-forests-patterns-predictors-and-threats/tree/main): I think all?
+
+**Article 5:**
+
+- Citation: @davoli2024
+- DOI: https://doi.org/10.1111/geb.13778
+- Data used: European megafauna ranges (PHYLACINE v1.2.1, IUCN), inventory of LIG fossils in Europe, megafauna functional traits (HerbiTraits, CarniDIET), LIG palaeoclimate data
+- [Data available](https://doi.org/10.6084/m9.figshare.22350907): All
+- Analyses conducted: Species distribution modelling, functional diversity metrics, potential vegetation consumption, potential meat consumption
+- Analyses available: None
+
+## Lab experiences & attitudes
+
+:::{.callout-note appearance="minimal"}
+
+Schedule a meeting with your major advisor(s) and/or a senior lab member to discuss their experiences and attitudes towards reproducible and open science. For example, you can choose to structure your conversations around the following questions: 
+
 - What tools does your advisor/lab use for collaborative data analysis/writing? What are some strengths and limitations of these tools?
 - What are the different sources/types of data that are generated/analyzed in your lab? What are the software tools that your lab uses for data visualization, analysis, and writing? Are there tools that your lab doesn't currently use that you feel would be useful additions? 
 - Is there a lab policy towards data and/or code sharing upon paper submission/acceptance? 
 - What are the lab's policies for long--term data archiving? 
 - Are there tools/skills/approaches in your subfield that your advisor suggests you adopt in addition to the tools we will cover in this course? 
+
 :::
 
+I led the discussion in my lab meeting on 6 February 2025, attended by the following people: Flavia Montaño-Centellas, Felicity Newell, Isabel Loza, Rhayza Cortes, Rounak Patra, and myself (Karthik Thrikkadeeri).
 
+We started off listing all the different types of data we have/do work with. Species/community-level datasets, especially line/point transect data, and datasets on species interactions were the most common; another common theme in the lab was work on multiple scales and taxa, which involve fine-scale local climate datasets, species occurrence datasets (e.g., TROPICOS, GBIF), citizen science data, global datasets on functional traits and phylogenies (with emphasis that we only use but do not produce phylogenies). We have also worked with data from behavioural observations and focal surveys, as well as data mining for social/demographic analyses.
 
+There is currently no lab policy for either data/code sharing or long-term archival, but we agreed that it would be something useful to have, while of course allowing some room for nuance. I suggested creating a "community" on Zenodo for the lab, which would collate all archival records (datasets, presentations, other resources produced) from our lab, and gave the example of the [Nature Conservation Foundation community](https://zenodo.org/communities/ncfindia/records?q=&l=list&p=1&s=10&sort=newest). This also led to a discussion on adopting [openness]{.underline} in authorship rules, and potentially creating guidelines for our lab. 
 
-**4**. Review the content covered in the first four weeks of the course. Pick one approach/idea/tool that stood out to you as being especially helpful for your career, and answer the following:
- 
-:::{.callout-note}
+Importantly, this was followed by some critique of data sharing practices, which sometimes generate inequality. Typically, big syntheses/review papers using openly available data get cited much more than the original datasets, which is problematic especially because our academic system unfairly rewards metrics like citations and often focuses on the short term. While it can be imagined that impactful/useful field datasets might naturally end up being cited by many different papers, we acknowledged that their short-term impact is much lower than for any big papers coming from the datasets. Further, with ecology as a field becoming more quantitative, which is a positive step, this is also resulting in poor science in purely quantitative studies using open datasets without appropriate natural historical backgrounds (e.g., GIS studies with zero field-truthing).
+
+In terms of software, most lab members used the same sets: spreadsheets mostly just to clean raw data, then R for the remaining steps of the data analysis pipeline; ArcGIS or QGIS for GIS analyses; Word for most writing, and sometimes GDocs (good for collaboration, but otherwise concerns). I am the only lab member to have used RMarkdown for the entire research pipeline (up until the final paper and slide decks). Rhayza listed Raven Pro and Praat for audio analysis and BORIS for behavioural data analysis. Some software we have used in the past but not anymore include MARK, DISTANCE, and BEAST. 
+
+Everyone agreed on the benefits of code-based/programmatic analysis software over blackbox tools. I also listed some benefits of Git-based workflows as well as of writing in markdown/$\LaTeX$. These benefits include easier collaboration, version control, painless formatting/typesetting, direct link between data and communication, which are typically [time-consuming and frustrating steps of the research pipeline](https://rr.gklab.org/03-quarto/quarto-slides#/section-8). On the topic of collaborative analyses/coding, we also discussed another hurdle for reproducibility, which is that coding styles and packages used vary from person to person, yielding questions of whether or not a codebase will survive deprecation. I mentioned that a coding practice that can address this issue is linking the codebase to the exact environment in which it was executed, which includes not just package versions but also versions of the programming language, IDE, etc.
+
+Finally, while we agreed that Git and GitHub are very useful, we also noted the importance of creating the opportunity for people to pick up this skill. The benefits are obvious and we agree that these skills are important to have, but they are not yet incorporated in traditional curricula, making it difficult to pick up and a disadvantage for beginners. Since the learning curve is steep, the initial investment cannot be mandatory but will have compounding returns. We agreed that if it is to be a lab practice, we need to work on it together. As a first step, we agreed to set up an organisation for the lab on GitHub/GitLab, which I will help with.
+
+## Content review & standout idea
+
+:::{.callout-note appearance="minimal"}
+
+Review the content covered in the first four weeks of the course. Pick one approach/idea/tool that stood out to you as being especially helpful for your career, and answer the following:
+
 - What approach/idea/tool have you selected, and why do you feel it might be especially relevant for your work? 
 - Use your favorite search engines to identify three resources (e.g. workshops, publications using that tool, youtube demo, ebook etc.) that you can use for a deeper dive.
-  - Identify a few features of this approach/idea/tool that you can envision using in your work, and illustrate its use through an example. 
+- Identify a few features of this approach/idea/tool that you can envision using in your work, and illustrate its use through an example. 
+
 :::
 
+The approach I have selected is **writing with Quarto**. I work in the field of ecology, which often and increasingly involves a lot of analytical work. Further, I am personally interested in studying large-scale biodiversity patterns, in which case data management and data analysis workflows become all the more important. Using Quarto (or RMarkdown) for writing helps in this regard, since it allows for my data to always be linked to my results, outputs and inferences. Having a personal interest in data, I have spent much time thinking about and working with datasets, and am all too convinced about the tiniest missteps or accidents in data handling resulting in the most massive and unexpected changes further downstream. So, in my opinion, this is much-needed quality control and helps me rest easier knowing my science is relatively robust. In addition to this, Quarto also brings in the powerful formatting and typesetting capabilities of markdown and $\LaTeX$, allowing me to spend energy on the things that really matter (the science). And finally, markdown is a plain-text language which makes it explicit and portable, meaning there are no funky things happening behind the scenes and I do not require a single specific programme or application to work with markdown documents.
 
+Three resources I can use for a deeper dive into writing with Quarto are:
 
+- [Quarto documentation](https://quarto.org/) (what better than to start from the source)  
+- [Quarto template for theses](https://gongcastro.github.io/blog/upfthesis/upfthesis.html) (good starting point for our summer project to create an LSU template!)  
+- [Reproducible Manuscripts with Quarto - posit::conf(2023)](https://www.youtube.com/watch?v=BoiW9UWDLY0) (to understand differences from RMarkdown manuscripts)
+
+I will be using Quarto for most of my work such as: writing manuscripts, creating slide decks, writing blog posts. I have been using RMarkdown for many of these already, and I will likely switch to Quarto for most. For instance, I have written manuscripts in the past entirely in RMarkdown ([example](https://github.com/rikudoukarthik/covid-ebirding/blob/main/README.md#manuscript)), and I will probably try using Quarto instead for the next one. I will write my entire PhD thesis in Quarto, so that I can have not only a perfectly formatted PDF document to submit to the university, but also an online/eBook version of the entire thesis, with better functionalities like cross-referencing and potentially interactivity, that anyone anywhere in the world can access. 
