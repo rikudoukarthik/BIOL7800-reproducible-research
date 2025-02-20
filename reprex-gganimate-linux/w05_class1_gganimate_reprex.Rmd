@@ -1,7 +1,7 @@
 ---
 title: gganimate not knitting
 ---
-
+  
 ```{r, echo=TRUE}
 library(palmerpenguins)
 library(tidyverse)
@@ -21,4 +21,3 @@ penguins_anim %>%
   transition_time(year) + # knits perfectly without this line 
   labs(title = "Year: {frame_time}")
 ```
-
