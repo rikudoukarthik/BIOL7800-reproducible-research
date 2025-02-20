@@ -1,0 +1,116 @@
+---
+title: "How R stores data: tibbles"
+embed-resources: true
+execute:
+  echo: true
+  warning: false
+editor_options: 
+  chunk_output_type: console
+---
+
+## tibbles vs data frames
+
+- Data frames can have row names, but tibbles cannot
+
+```{r}
+library(dplyr) 
+
+head(mtcars)
+
+head(as_tibble(mtcars))
+
+head(as_tibble(mtcars, rownames = "car_type"))
+```
+
+- Print more cleanly
+
+```{r}
+mtcars
+as_tibble(mtcars)
+
+```
+
+- Does not recycle vectors except if length 1 (i.e., tibbles reject recycled values)
+
+```{r}
+# tibble(1:3, 1:10)
+tibble(1:3, 1)
+```
+
+- Non-vector columns `list_cols`
+
+```{r}
+site <- c(1, 2, 3)
+species1 <- c("sp1", "sp2", "sp5")
+species2 <- c("sp1", "sp3")
+species3 <- c("sp4")
+
+tibble(site, species_list = list(species1, species2, species3))
+```
+
+## Object-oriented programming
+
+Continuing with Hadley's book.
+
+R6 object class!
+
+```{r}
+# install.packages("R6")
+library(R6)
+```
+
+Copy-on-modify is default R behaviour: if change is made to an object after it was first created, the change is registered to a copy of the original:
+
+```{r}
+x <- 1:3
+y <- x
+tracemem(y)
+
+y[[3]] <- 4L
+y[[3]] <- 5L
+y[[3]] <- 6L
+untracemem(y)
+```
+
+After the first rewrite, doesn't create copies anymore, because R switches to modify-in-place.
+
+Modify-in-place happens in two cases:  
+- Objects with single binding (for optimisation) 
+- Environments, a special object type
+
+```{r}
+x <- data.frame(matrix(runif(5 * 1e4), ncol = 5))
+medians <- vapply(x, median, numeric(1))
+
+cat(tracemem(x), "\n")
+
+for (i in seq_along(medians)) {
+  x[[i]] <- x[[i]] - medians[[i]]
+}
+
+untracemem(x)
+```
+
+List modification uses internal C code, which doesn't create copies (unlike data frames)
+
+```{r}
+y <- as.list(x)
+cat(tracemem(y), "\n")
+  
+for (i in 1:5) {
+  y[[i]] <- y[[i]] - medians[[i]]
+}
+```
+
+Environments:
+
+```{r}
+e1 <- rlang::env(a = 1, b = 2, c = 3)
+e2 <- e1
+e1$c <- 4
+e2$c
+```
+
+Environments can contain themselves!
+
+
