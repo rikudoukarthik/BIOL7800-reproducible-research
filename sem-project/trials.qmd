@@ -1,0 +1,23 @@
+---
+title: "Trials for reproducing Arellano et al. (2014)"
+author: Karthik Thrikkadeeri
+date: 
+toc: true
+number-sections: false
+embed-resources: true
+bibliography: ../PhD.json
+theme: sandstone
+format: html
+editor_options: 
+  chunk_output_type: console
+---
+
+Their dataset is only available on TROPICOS, but since it is connected to GBIF ([Tropicos MO Specimen Data](https://www.gbif.org/dataset/7bd65a7a-f762-11e1-a439-00145eb45e9a)), I can try using `rgbif` to access it. However, I have some questions about the fields I will be able to access.
+
+```{r}
+library(rgbif)
+
+tropicos <- occ_search(datasetKey = "7bd65a7a-f762-11e1-a439-00145eb45e9a",
+                       )
+```
+

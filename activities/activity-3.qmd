@@ -1,0 +1,76 @@
+---
+title: "Activity 3: Overview of the original paper"
+author: Karthik Thrikkadeeri
+date: 2025-03-05
+toc: true
+number-sections: false
+embed-resources: true
+bibliography: ../PhD.json
+theme: sandstone
+format: html
+---
+
+:::{.callout-tip collapse=true}
+### Submit this activity by pushing it to a new "Semester Project" git repository before class on 6 March 2025. 
+
+**Instructions for completion**:  
+
+- Download the `.qmd` source code for this file from the [course git repository](https://gitlab.com/gklab/teaching/reproducible-research-s25/-/raw/main/activities/activity-3.qmd?ref_type=heads).  
+- Edit the document with your responses to the questions, and render the document into an `html` file.  
+- Commit and push both the `qmd` source and the rendered `html` file to your semester project git repository. 
+
+:::
+
+
+The goals for this activity are for you to:
+
+- finalize the published paper in your field whose results you aim to reproduce as part of the semester project for this course, 
+- thoroughly explore the dataset and understand the "data generation process" 
+- identify the software packages you will need to implement to complete this reproduction analysis. 
+
+Fill out the information in the sections below. 
+
+***
+
+# Citation
+
+> Add an in-text citation to your publication here: 
+
+@arellano2014
+
+# Main results
+
+> What are the core results from the original analysis that you wish to reproduce?
+
+The core result from the analysis I wish to reproduce is devising the metric of two-dimensional commonness using their original dataset. If this works out well, I would like to generalise this approach by trying to generate the commonness metric a different species inventory dataset.
+
+# Details of the dataset
+
+> Provide an overview of all details regarding the original dataset that you feel will be relevant for your re-analysis. For example, what are the different "types" of data relavent to this analysis (e.g. what are the columns in the dataset? Is each column categorical or continuous? How many observations are present? How are missing values represented?)
+
+- I pretty much only need the species inventory dataset. These matrices (presumably species by site) will then be used to calculate the h indices, using two functions the authors had provided in the supplement to their paper.
+- However, they have not made their working dataset available, and instead point us to TROPICS where all the plot data are available to be queried.
+- Querying the TROPICOS dataset for the Madidi project ([link](http://legacy.tropicos.org/PlotSearch.aspx?projectid=20)) using the minimum and maximum lat-long info listed in the Methods section of the paper yields 554 plot records. This does not match the count of 407 plots the authors mention in the paper.
+- As there seems to be no way to download the dataset directly from TROPICOS---even if one manually clicks through all 554 records, the website displays an embedded spreadsheet but there is no obvious way to download it---I can try accesing it via GBIF using the `rgbif` package.
+- I will also need to figure out some additional filters I can use, like time "past 12 years", elevation ("to the forest limit, ca 4000 m"), or plot size ("407 plots of 0.1 ha ... minimum inter-plot distance of 250 m"). 
+
+# Details of the analytical approach
+
+> Provide an overview of the analytical approach used in the original study. Include both conceptual and practical information (e.g. what *kind* of analyses were conducted, and using which software packages?)
+
+#  Path to reproduction 
+
+> - Describe what data are available, including links to all repositories.
+> 
+> - Describe what code is available, including links to all repositories. 
+
+# Getting familiar with the data
+
+> Download the dataset and use `dplyr` to start familiarizing yourself with the structures and patterns in the dataset. Please include your code and the output below. (Try making at least 5 plots to conduct [exploratory data analysis](https://r4ds.hadley.nz/EDA.html), and run 1--2 simple statistical models).
+
+```{r echo=T}
+
+
+
+```
+
