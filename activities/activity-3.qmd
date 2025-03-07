@@ -1,13 +1,15 @@
 ---
 title: "Activity 3: Overview of the original paper"
 author: Karthik Thrikkadeeri
-date: 2025-03-05
+date: 2025-03-06
 toc: true
 number-sections: false
 embed-resources: true
 bibliography: ../PhD.json
 theme: sandstone
 format: html
+editor_options: 
+  chunk_output_type: console
 ---
 
 :::{.callout-tip collapse=true}
@@ -36,27 +38,59 @@ Fill out the information in the sections below.
 
 > Add an in-text citation to your publication here: 
 
-@arellano2014
+@montano-centellas2020
 
 # Main results
 
 > What are the core results from the original analysis that you wish to reproduce?
 
-The core result from the analysis I wish to reproduce is devising the metric of two-dimensional commonness using their original dataset. If this works out well, I would like to generalise this approach by trying to generate the commonness metric a different species inventory dataset.
+The core results are: 
 
-# Details of the dataset
+- Patterns of bird functional and phylogenetic diversity along elevational gradients of the world (quadratic regression model, Figure 2) 
+- Trends in bird functional and phylogenetic diversity along elevational gradients of the world, after controlling for species richness (quadratic polynomial regression models for individual mountains and for all mountains together, Figure 3, Table 1) 
+- Deterministic processes driving global patterns (Figure 4, Table 2) 
+    - Effect of latitude on patterns of elevational change (Figure 4)
+
+# Details of the dataset {#dataset}
 
 > Provide an overview of all details regarding the original dataset that you feel will be relevant for your re-analysis. For example, what are the different "types" of data relavent to this analysis (e.g. what are the columns in the dataset? Is each column categorical or continuous? How many observations are present? How are missing values represented?)
 
-- I pretty much only need the species inventory dataset. These matrices (presumably species by site) will then be used to calculate the h indices, using two functions the authors had provided in the supplement to their paper.
-- However, they have not made their working dataset available, and instead point us to TROPICS where all the plot data are available to be queried.
-- Querying the TROPICOS dataset for the Madidi project ([link](http://legacy.tropicos.org/PlotSearch.aspx?projectid=20)) using the minimum and maximum lat-long info listed in the Methods section of the paper yields 554 plot records. This does not match the count of 407 plots the authors mention in the paper.
-- As there seems to be no way to download the dataset directly from TROPICOS---even if one manually clicks through all 554 records, the website displays an embedded spreadsheet but there is no obvious way to download it---I can try accesing it via GBIF using the `rgbif` package.
-- I will also need to figure out some additional filters I can use, like time "past 12 years", elevation ("to the forest limit, ca 4000 m"), or plot size ("407 plots of 0.1 ha ... minimum inter-plot distance of 250 m"). 
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# Load in the data to examine and describe it:
+
+library(dplyr)
+library(readxl) # file is .xlsx
+library(glue)
+library(ggplot2); theme_set(theme_classic())
+
+data_dryad <- read_xlsx("data/montano_dryad_data.xlsx",
+                        sheet = "FDPD_Supporting")
+
+any_missing <- anyNA(data_dryad)
+```
+
+- The processed dataset that the authors have made available on Dryad is what I need to base the analyses and visualisations off. 
+- The data exist as a single `.xlsx` file, which I have renamed as `montano_dryad_data.xlsx` in my `data/` directory. 
+- The `.xlsx` file has two sheets; the actual data are in the second sheet named `FDPD_Supporting` while the first sheet `Details` serves as a README for metadata. 
+- The data comprise `r dim(data_dryad)[2]` columns, of which the first is categorical (mountain name) and the rest are all numerical (including richness and diversity metrics, and standardised effect sizes with their p-values). 
+    - The column `elevation` is numerical, but it is worth noting that it is at the resolution of 100 m elevational bands. (So, depending on the question, this column may be treated as categorical.)
+- There are `r dim(data_dryad)[1]` observations in the dataset, across `r n_distinct(data_dryad$Mountain)` mountains of the world. 
+- Likely because this is the processed dataset ready to be analysed, there are `r if (any_missing == FALSE) glue("no")` missing values. 
+- Similarly, I will need to assume that there were no errors in the several steps leading up to this processed dataset.
+
+```{r, echo=FALSE}
+head(data_dryad)
+```
+
 
 # Details of the analytical approach
 
 > Provide an overview of the analytical approach used in the original study. Include both conceptual and practical information (e.g. what *kind* of analyses were conducted, and using which software packages?)
+
+- After calculating the four diversity metrics for each elevational band across all mountains, the authors first explored elevational patterns in these metrics using quadratic regressions. Based on the coefficients and overall shape of the polynomial curves, they classified patterns in each mountain as one of nine categories, including one for non-significant patterns. (See [Appendix S2](https://onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1111%2Fgeb.13021&file=geb13021-sup-0001-Supinfo.pdf).) 
+- For exploring deterministic processes driving community assembly across mountains, they used a null model approach to test whether the diversity patterns they observed were different from those from random assembly. The null models were created by randomising tip labels of trait and phylogeny data (in 1000 runs) while fixing the rows and columns of the observed community data matrix. The deviation of each observed metric from the average of the null model was standardised to obtain standardised effect sizes (SES). The direction of SES suggested clustering/overdispersion while its magnitude hinted at the strength of the signal of the deterministic process. 
+- They further tested global trends in elevational patterns of deterministic signal by modelling the SES of each diversity metric against normalised elevation in linear mixed-effects models. 
+- Finally, they tested for the effect of latitude on patterns of deterministic signal using a two-stage mixed-effects model. This is a type of hierarchical multivariate meta-regression, where a linear model is first fitted and then its slope and associated variance are used as response variables in a multivariate meta-regression. The `metafor` package was used for this analysis. 
 
 #  Path to reproduction 
 
@@ -64,13 +98,107 @@ The core result from the analysis I wish to reproduce is devising the metric of 
 > 
 > - Describe what code is available, including links to all repositories. 
 
+- There is no code available for any step of this study.
+- As described [above](#dataset), the processed dataset ready for analyses has been made available [on Dryad](https://doi.org/10.5061/dryad.tqjq2bvtc). This contains functional and phylogenetic richness and diversity metrics calculated at the level of 100 m elevation bands across `r n_distinct(data_dryad$Mountain)` mountains of the world, along with their SES and corresponding p-values. 
+- I can perform the quadratic regression with the diversity metrics to obtain classifications of elevational patterns. I do not need a separate package for this step, as I can use the `lm()` function from the base `stats` package. 
+- Since the authors have not provided the original trait and phylogeny data, or the community data matrix, I will not be able to reproduce the SES calculation. But I can reproduce the linear mixed-effects models using the `lmer()` function from the `lme4` package. 
+- Since there is no latitude data (or any other geographical data like country) for the mountains, I will not be able to reproduce their final meta-regression model testing for a latitudinal effect. 
+
 # Getting familiar with the data
 
 > Download the dataset and use `dplyr` to start familiarizing yourself with the structures and patterns in the dataset. Please include your code and the output below. (Try making at least 5 plots to conduct [exploratory data analysis](https://r4ds.hadley.nz/EDA.html), and run 1--2 simple statistical models).
 
-```{r echo=T}
+First, let's explore how the `r n_distinct(data_dryad$Mountain)` mountains are distributed elevationally.
 
+```{r echo=TRUE}
 
+data_dryad %>% 
+  ggplot() +
+  geom_histogram(aes(x = elevation), binwidth = 100) +
+  scale_y_continuous(breaks = seq(0, 50, 5))
 
 ```
 
+Clearly, there is only one mountain that exceeds 4000 m asl, which is `r data_dryad %>% filter(elevation > 4000) %>% distinct(Mountain) %>% pull(Mountain)`. 
+
+Let's now arrange the mountains in descending order of their maximum elevation.
+
+```{r echo=TRUE}
+library(forcats)
+
+data_dryad %>% 
+  group_by(Mountain) %>% 
+  reframe(elevation = max(elevation)) %>%
+  arrange(desc(elevation)) %>% 
+  ggplot(aes(x = fct_inorder(Mountain), y = elevation)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+This confirms the previous point, but shows that the data also include one mountain with a maximum elevation less than 1000 m asl (`r data_dryad %>% filter(elevation < 1000) %>% distinct(Mountain) %>% pull(Mountain)`)!
+
+Next, let's check how species richness changes across elevation.
+
+```{r echo=TRUE}
+data_dryad %>% 
+  ggplot(aes(x = elevation, y = Richness, colour = Mountain)) +
+  geom_line() +
+  theme(legend.position = "none")
+```
+
+This shows that some mountains have interesting patterns, where richness stays exactly the same across multiple elevation bands. My first guess is that this has something to do with how species observations were aggregated across bands, but this is certainly worth keeping in mind in further analyses.
+
+Let's now take a look at the diversity metrics.
+
+```{r echo=TRUE}
+library(tidyr)
+
+# diversity metrics
+data_diversity <- data_dryad %>% 
+  pivot_longer(cols = c("FRic", "FDis", "PD", "MPD"), 
+               names_to = "metric", values_to = "value") %>% 
+  select(Mountain, elevation, metric, value)
+
+data_diversity %>% 
+  ggplot(aes(x = value)) +
+  geom_freqpoly() +
+  facet_wrap(~ metric, scales = "free_x", nrow = 1)
+
+# SES for four metrics
+data_ses <- data_dryad %>% 
+  pivot_longer(cols = starts_with("SES"), 
+               names_to = "ses", values_to = "value") %>% 
+  select(Mountain, elevation, ses, value)
+
+data_ses %>% 
+  ggplot(aes(x = value, colour = ses)) +
+  geom_freqpoly() +
+  theme(legend.position = "top")
+
+```
+
+The first plot shows just how different the scales are for the four diversity metrics, whereas the second plot shows that their SESs are actually comparable.
+
+Let's test if the functional richness and diversity metrics are correlated, using their SES values.
+
+```{r echo=TRUE}
+summary(lm(SES.FDis ~ SES.FRic, data = data_dryad))
+
+data_dryad %>% 
+  ggplot(aes(x = SES.FRic, y = SES.FDis, colour = Mountain)) +
+  geom_point() + 
+  theme(legend.position = "none")
+```
+
+There seems to be a correlation, which is significant according to the linear model summary, although the model itself needs to be refined by accounting for random variation across mountains. Let's check if a similar pattern exists for phylogenetic metrics.
+
+```{r echo=TRUE}
+summary(lm(SES.MPD ~ SES.PD, data = data_dryad))
+
+data_dryad %>% 
+  ggplot(aes(x = SES.PD, y = SES.MPD, colour = Mountain)) +
+  geom_point() + 
+  theme(legend.position = "none")
+```
+
+This time the pattern is more complicated, albeit still a significant trend according to the simple linear model.
