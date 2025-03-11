@@ -1,0 +1,18 @@
+---
+title: "Week of 2025-03-03"
+author: "Your Name"
+date: 2025-03-03
+projects: project-1, project-2
+---
+
+## Goals for the week
+
+## Monday
+
+## Tuesday
+
+## Wednesday
+
+## Thursday
+
+## Friday

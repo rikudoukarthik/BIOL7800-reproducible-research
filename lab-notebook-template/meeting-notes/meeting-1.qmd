@@ -1,0 +1,19 @@
+---
+title: "Meeting Title in /meeting-notes"
+attendees: Person 1, Person 2
+date: 2025-03-08
+---
+
+
+## Meeting goals
+
+{{< lipsum 1 >}}
+
+## Things to think about
+
+{{< lipsum 1 >}}
+
+## Action items
+
+- [ ] Task 1
+- [ ] Task 2

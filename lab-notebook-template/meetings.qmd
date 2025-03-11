@@ -1,0 +1,14 @@
+---
+title: "Meeting notes"
+format: html
+listing:
+  contents:
+    - "**meeting**.qmd"
+  type: table
+  fields: [title, date, projects]
+  filter-ui: [title, date, projects]
+---
+
+New meeting note files can be made with `quartoutils::make_meeting_notes()`. 
+These files are saved into the `weekly-notes` subdirectory; or alternatively, they can be stored into a project subdirectory by passing the argument `project = ...` to the function. 
+Meetings associated with specific project tags are listed under the corresponding project landing pages, or can be viewed directly from the Meeting Notes landing page. 

@@ -1,0 +1,9 @@
+---
+title: "Idea note 1"
+date: today
+projects: project-1
+---
+
+## Thoughts about project
+
+{{< lipsum 1 >}}

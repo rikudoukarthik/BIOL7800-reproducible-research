@@ -1,0 +1,63 @@
+---
+title: "Lab notebook template"
+format: html
+---
+
+This lab notebook template came out of  [Digital Lab Notebooks]() crash course for my 2025 Reproducible Research course. 
+
+# Usage 
+
+## Using the lab notebook template to establish a new project on GitLab
+
+The goal for this repository is to serve as a template that you can modify to establish your very own digital lab notebook.
+Click around on the tabs above to explore some of the functionality of this template site.
+There are (at least) two ways to use this template.
+If you are part of the `gklab` group on Gitlab, the easiest way is to use this project as the "template" to create your very own repository on GitLab. See the Video or Written steps below for detailed instructions
+
+
+If you are not part of the `gklab` group on Gitlab (or wish to host this on Github instead), you can directly create a copy of this notebook project onto your computer with the following command: `quarto use template https://gitlab.com/gklab/templates/lab-notebook-template-2/-/archive/main/lab-notebook-template-2-main.zip`. 
+If you choose to go this route, you will have to connect the repository to Git etc.; I assume you know how to do this.
+
+:::{.callout-note collapse="true"}
+### Video instructions for gitlab users
+
+{{< video media/use-template.mp4 >}}
+
+:::
+
+:::{.callout-note collapse="true"}
+### Steps for gitlab users
+
+1. Once logged into GitLab, create a new repository by clicking on the blue "New Project" button at the top-right of the screen. 
+1. Select "Create from template". 
+1. Click over to the "Group" tab to see our lab-specific templates.
+1. Click on the blue "Use template" button next to "Lab notebook template 2". 
+1. Provide a name for this notebook -- something like `firstnames-notebook`   is probably easiest. 
+1. For now, you will be required to place this new repository under the `gklab/` workspace (but I will walk through how to move this into a differnt location if you so wish). 
+1. You can decide whether to keep it as a public or private repo. 
+1. Once created, this repository is ***ready to use***! You can clone this repository locally by copying the SSH link and cloning into a new Rstuio Rproject. 
+1. If you wish to move this repository out of the `gklab/` workspace, click on "Settings" on the bottom-left menu, and then navigate to General. 
+1. Expand the "Advanced" settings, and scroll down to "Transfer project". 
+1. Under "Select new namespace", you should see an option to transfer this into your gitlab user namespace. 
+:::
+
+## Installing the `quartoutils` package
+
+To facilitate use of this notebook template, I've written a small `R` package that contains utility functions, e.g. to create new weekly note documents. ***Note*** that as of March 2025, this package is very much under development -- the functions have been tested in a relatively narrow range of use cases, and are not super well documented. This will change as the package matures. (In fact, you can help it grow by sharing issues or suggesting and/or implementing improvements!). 
+
+You can install this package from `gitlab` using the following commands:
+
+```{r}
+#| eval: false
+
+install.packages("pak")
+pak::pak("gitlab::gklab/quartoutils")
+```
+
+## Verifying that the notebook builds on your system 
+
+Before moving on, let's verify that the lab notebook can render properly on your local system. If you have not already done so, create a clone of the new git repo as a new Rstudio Rproject on your local computer. ^[If you need a refresher -- to do this, navigate to "File --> New project" on the top-left of your RStudio screen. Then, select "Version Control", then "Git", and copy in the SSH link copied from your git repository.]
+
+Once you open the project in RStudio, render the notebook by clicking on the blue "Render" button at the top of the screen. You can also achieve this with the keyboard shortcut `Control+Shift+B`. You should see something that looks exactly like the [template website]()!
+
+

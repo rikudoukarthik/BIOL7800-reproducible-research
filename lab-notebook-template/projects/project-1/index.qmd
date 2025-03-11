@@ -1,0 +1,56 @@
+---
+title: 'project-1'
+format: html
+listing:
+  - id: meeting-notes
+    contents: "meeting-notes/*.qmd"
+    type: table
+    fields: [date, title, attendees]
+    filter-ui: [title, date, attendees]
+  - id: reading-notes
+    contents: "../../reading-notes/*.qmd"
+    type: table
+    fields: [year, title, author]
+    include:
+      projects: "*project-1*"
+  - id: other-ideas
+    contents: "idea*.qmd"
+    type: table
+    fields: [date, title]
+    sort-ui: false
+    filter-ui: false
+  - id: timeline
+    sort-ui: false
+    filter-ui: false
+    contents: "../../weekly-notes/*.qmd"
+    type: table
+    fields: [title, projects, keywords]
+    include:
+      projects: "*project-1*"
+---
+
+## About this project
+
+{{< lipsum 1 >}}
+
+
+## Concept notes and other ideas
+
+:::{#other-ideas}
+:::
+
+
+## Reading notes
+
+:::{#reading-notes}
+:::
+
+## Meeting notes
+
+:::{#meeting-notes}
+:::
+
+## Weeks in which I worked on this project
+
+:::{#timeline}
+:::

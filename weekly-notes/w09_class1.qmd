@@ -1,0 +1,31 @@
+---
+title: How R stores data 
+execute:
+  warning: false
+editor_options: 
+  chunk_output_type: console
+---
+
+Using Gaurav's template:
+
+```{r eval=FALSE}
+# install.packages("pak")
+library(pak)
+pak("gitlab::gklab/quartoutils")
+```
+
+Then we need to navigate to the appropriate directory (for me, the same repo) then run the following code in terminal:
+
+```{bash eval=FALSE}
+quarto use template https://gitlab.com/gklab/templates/lab-notebook-template-2/-/archive/main/lab-notebook-template-2-main.zip
+```
+
+- I like the idea of using it for meeting notes, maybe class notes, and brainstorming/ideation/interpretation/discussion of projects 
+- Especially since some of the programming/SQL-like workflow in Obsidian isn't the most clear to me, so Quarto/RStudio workflow will be really efficient 
+- But not for literature reading notes---unless we can build in the Zotero integration like in Obsidian, so that fields like citation key, author, year, etc. are automatically populated 
+
+## Suggestions
+
+- Argument to decide whether or not to create new `.Rproj` file 
+- Hotkey bindings for the functions (create new __) 
+- Argument to decide what categories (or which of the default 3) we want 

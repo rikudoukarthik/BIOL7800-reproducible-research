@@ -1,0 +1,226 @@
+[
+  {
+    "objectID": "weekly-notes/week-of-2025-03-03.html#monday",
+    "href": "weekly-notes/week-of-2025-03-03.html#monday",
+    "title": "Week of 2025-03-03",
+    "section": "Monday",
+    "text": "Monday"
+  },
+  {
+    "objectID": "weekly-notes/week-of-2025-03-03.html#tuesday",
+    "href": "weekly-notes/week-of-2025-03-03.html#tuesday",
+    "title": "Week of 2025-03-03",
+    "section": "Tuesday",
+    "text": "Tuesday"
+  },
+  {
+    "objectID": "weekly-notes/week-of-2025-03-03.html#wednesday",
+    "href": "weekly-notes/week-of-2025-03-03.html#wednesday",
+    "title": "Week of 2025-03-03",
+    "section": "Wednesday",
+    "text": "Wednesday"
+  },
+  {
+    "objectID": "weekly-notes/week-of-2025-03-03.html#thursday",
+    "href": "weekly-notes/week-of-2025-03-03.html#thursday",
+    "title": "Week of 2025-03-03",
+    "section": "Thursday",
+    "text": "Thursday"
+  },
+  {
+    "objectID": "weekly-notes/week-of-2025-03-03.html#friday",
+    "href": "weekly-notes/week-of-2025-03-03.html#friday",
+    "title": "Week of 2025-03-03",
+    "section": "Friday",
+    "text": "Friday"
+  },
+  {
+    "objectID": "reading-notes/index.html",
+    "href": "reading-notes/index.html",
+    "title": "Reading notes",
+    "section": "",
+    "text": "The function quartoutils::make_reading_notes() makes it easy to create and edit a file to jot down reading notes.\nSpecifically, this function creates a new file in the reading-notes subdirectory of the root, using the file name provided through an argument. If such a file already exists, this function quits with an error. The file also automatically gets added to a table of all such files, which is accessible from the “Reading Notes” landing page of the website. This file is also added to the “reading notes” section of each project landing page; this functionality is demonstrated in the video below.\n\n\n\n\n\n\nVideo instructions to create reading notes\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n   \n     \n     \n       Order By\n       Default\n         \n          Title\n        \n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\nTitle\n\n\nAuthor\n\n\nyear\n\n\nprojects\n\n\nkeywords\n\n\n\n\n\n\nDemo paper title\n\n\nDemo Author\n\n\n2020\n\n\nproject-1\n\n\n \n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "projects/project-1/meeting-notes/meeting1.html",
+    "href": "projects/project-1/meeting-notes/meeting1.html",
+    "title": "Meeting Title",
+    "section": "",
+    "text": "Duis urna urna, pellentesque eu urna ut, malesuada bibendum dolor. Suspendisse potenti. Vivamus ornare, arcu quis molestie ultrices, magna est accumsan augue, auctor vulputate erat quam quis neque. Nullam scelerisque odio vel ultricies facilisis. Ut porta arcu non magna sagittis lacinia. Cras ornare vulputate lectus a tristique. Pellentesque ac arcu congue, rhoncus mi id, dignissim ligula."
+  },
+  {
+    "objectID": "projects/project-1/meeting-notes/meeting1.html#meeting-goals",
+    "href": "projects/project-1/meeting-notes/meeting1.html#meeting-goals",
+    "title": "Meeting Title",
+    "section": "",
+    "text": "Duis urna urna, pellentesque eu urna ut, malesuada bibendum dolor. Suspendisse potenti. Vivamus ornare, arcu quis molestie ultrices, magna est accumsan augue, auctor vulputate erat quam quis neque. Nullam scelerisque odio vel ultricies facilisis. Ut porta arcu non magna sagittis lacinia. Cras ornare vulputate lectus a tristique. Pellentesque ac arcu congue, rhoncus mi id, dignissim ligula."
+  },
+  {
+    "objectID": "projects/project-1/meeting-notes/meeting1.html#things-to-think-about",
+    "href": "projects/project-1/meeting-notes/meeting1.html#things-to-think-about",
+    "title": "Meeting Title",
+    "section": "Things to think about",
+    "text": "Things to think about\nProin sodales neque erat, varius cursus diam tincidunt sit amet. Etiam scelerisque fringilla nisl eu venenatis. Donec sem ipsum, scelerisque ac venenatis quis, hendrerit vel mauris. Praesent semper erat sit amet purus condimentum, sit amet auctor mi feugiat. In hac habitasse platea dictumst. Nunc ac mauris in massa feugiat bibendum id in dui. Praesent accumsan urna at lacinia aliquet. Proin ultricies eu est quis pellentesque. In vel lorem at nisl rhoncus cursus eu quis mi. In eu rutrum ante, quis placerat justo. Etiam euismod nibh nibh, sed elementum nunc imperdiet in. Praesent gravida nunc vel odio lacinia, at tempus nisl placerat. Aenean id ipsum sed est sagittis hendrerit non in tortor."
+  },
+  {
+    "objectID": "projects/project-1/meeting-notes/meeting1.html#action-items",
+    "href": "projects/project-1/meeting-notes/meeting1.html#action-items",
+    "title": "Meeting Title",
+    "section": "Action items",
+    "text": "Action items\n\nTask 1\nTask 2"
+  },
+  {
+    "objectID": "projects/project-1/idea-note1.html",
+    "href": "projects/project-1/idea-note1.html",
+    "title": "Idea note 1",
+    "section": "",
+    "text": "Duis ornare ex ac iaculis pretium. Maecenas sagittis odio id erat pharetra, sit amet consectetur quam sollicitudin. Vivamus pharetra quam purus, nec sagittis risus pretium at. Nullam feugiat, turpis ac accumsan interdum, sem tellus blandit neque, id vulputate diam quam semper nisl. Donec sit amet enim at neque porttitor aliquet. Phasellus facilisis nulla eget placerat eleifend. Vestibulum non egestas eros, eget lobortis ipsum. Nulla rutrum massa eget enim aliquam, id porttitor erat luctus. Nunc sagittis quis eros eu sagittis. Pellentesque dictum, erat at pellentesque sollicitudin, justo augue pulvinar metus, quis rutrum est mi nec felis. Vestibulum efficitur mi lorem, at elementum purus tincidunt a. Aliquam finibus enim magna, vitae pellentesque erat faucibus at. Nulla mauris tellus, imperdiet id lobortis et, dignissim condimentum ipsum. Morbi nulla orci, varius at aliquet sed, facilisis id tortor. Donec ut urna nisi."
+  },
+  {
+    "objectID": "projects/project-1/idea-note1.html#thoughts-about-project",
+    "href": "projects/project-1/idea-note1.html#thoughts-about-project",
+    "title": "Idea note 1",
+    "section": "",
+    "text": "Duis ornare ex ac iaculis pretium. Maecenas sagittis odio id erat pharetra, sit amet consectetur quam sollicitudin. Vivamus pharetra quam purus, nec sagittis risus pretium at. Nullam feugiat, turpis ac accumsan interdum, sem tellus blandit neque, id vulputate diam quam semper nisl. Donec sit amet enim at neque porttitor aliquet. Phasellus facilisis nulla eget placerat eleifend. Vestibulum non egestas eros, eget lobortis ipsum. Nulla rutrum massa eget enim aliquam, id porttitor erat luctus. Nunc sagittis quis eros eu sagittis. Pellentesque dictum, erat at pellentesque sollicitudin, justo augue pulvinar metus, quis rutrum est mi nec felis. Vestibulum efficitur mi lorem, at elementum purus tincidunt a. Aliquam finibus enim magna, vitae pellentesque erat faucibus at. Nulla mauris tellus, imperdiet id lobortis et, dignissim condimentum ipsum. Morbi nulla orci, varius at aliquet sed, facilisis id tortor. Donec ut urna nisi."
+  },
+  {
+    "objectID": "meetings.html",
+    "href": "meetings.html",
+    "title": "Meeting notes",
+    "section": "",
+    "text": "New meeting note files can be made with quartoutils::make_meeting_notes(). These files are saved into the weekly-notes subdirectory; or alternatively, they can be stored into a project subdirectory by passing the argument project = ... to the function. Meetings associated with specific project tags are listed under the corresponding project landing pages, or can be viewed directly from the Meeting Notes landing page.\n\n\n\n\n\n\n   \n     \n     \n       Order By\n       Default\n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Title\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\nTitle\n\n\nDate\n\n\nprojects\n\n\n\n\n\n\nMeeting Title\n\n\nMar 11, 2025\n\n\nproject-1\n\n\n\n\nMeeting Title in /meeting-notes\n\n\nMar 8, 2025\n\n\n \n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Lab notebook template",
+    "section": "",
+    "text": "This lab notebook template came out of Digital Lab Notebooks crash course for my 2025 Reproducible Research course."
+  },
+  {
+    "objectID": "index.html#using-the-lab-notebook-template-to-establish-a-new-project-on-gitlab",
+    "href": "index.html#using-the-lab-notebook-template-to-establish-a-new-project-on-gitlab",
+    "title": "Lab notebook template",
+    "section": "Using the lab notebook template to establish a new project on GitLab",
+    "text": "Using the lab notebook template to establish a new project on GitLab\nThe goal for this repository is to serve as a template that you can modify to establish your very own digital lab notebook. Click around on the tabs above to explore some of the functionality of this template site. There are (at least) two ways to use this template. If you are part of the gklab group on Gitlab, the easiest way is to use this project as the “template” to create your very own repository on GitLab. See the Video or Written steps below for detailed instructions\nIf you are not part of the gklab group on Gitlab (or wish to host this on Github instead), you can directly create a copy of this notebook project onto your computer with the following command: quarto use template https://gitlab.com/gklab/templates/lab-notebook-template-2/-/archive/main/lab-notebook-template-2-main.zip. If you choose to go this route, you will have to connect the repository to Git etc.; I assume you know how to do this.\n\n\n\n\n\n\nVideo instructions for gitlab users\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSteps for gitlab users\n\n\n\n\n\n\nOnce logged into GitLab, create a new repository by clicking on the blue “New Project” button at the top-right of the screen.\nSelect “Create from template”.\nClick over to the “Group” tab to see our lab-specific templates.\nClick on the blue “Use template” button next to “Lab notebook template 2”.\nProvide a name for this notebook – something like firstnames-notebook is probably easiest.\nFor now, you will be required to place this new repository under the gklab/ workspace (but I will walk through how to move this into a differnt location if you so wish).\nYou can decide whether to keep it as a public or private repo.\nOnce created, this repository is ready to use! You can clone this repository locally by copying the SSH link and cloning into a new Rstuio Rproject.\nIf you wish to move this repository out of the gklab/ workspace, click on “Settings” on the bottom-left menu, and then navigate to General.\nExpand the “Advanced” settings, and scroll down to “Transfer project”.\nUnder “Select new namespace”, you should see an option to transfer this into your gitlab user namespace."
+  },
+  {
+    "objectID": "index.html#installing-the-quartoutils-package",
+    "href": "index.html#installing-the-quartoutils-package",
+    "title": "Lab notebook template",
+    "section": "Installing the quartoutils package",
+    "text": "Installing the quartoutils package\nTo facilitate use of this notebook template, I’ve written a small R package that contains utility functions, e.g. to create new weekly note documents. Note that as of March 2025, this package is very much under development – the functions have been tested in a relatively narrow range of use cases, and are not super well documented. This will change as the package matures. (In fact, you can help it grow by sharing issues or suggesting and/or implementing improvements!).\nYou can install this package from gitlab using the following commands:\n\ninstall.packages(\"pak\")\npak::pak(\"gitlab::gklab/quartoutils\")"
+  },
+  {
+    "objectID": "index.html#verifying-that-the-notebook-builds-on-your-system",
+    "href": "index.html#verifying-that-the-notebook-builds-on-your-system",
+    "title": "Lab notebook template",
+    "section": "Verifying that the notebook builds on your system",
+    "text": "Verifying that the notebook builds on your system\nBefore moving on, let’s verify that the lab notebook can render properly on your local system. If you have not already done so, create a clone of the new git repo as a new Rstudio Rproject on your local computer. 1\nOnce you open the project in RStudio, render the notebook by clicking on the blue “Render” button at the top of the screen. You can also achieve this with the keyboard shortcut Control+Shift+B. You should see something that looks exactly like the template website!"
+  },
+  {
+    "objectID": "index.html#footnotes",
+    "href": "index.html#footnotes",
+    "title": "Lab notebook template",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nIf you need a refresher – to do this, navigate to “File –&gt; New project” on the top-left of your RStudio screen. Then, select “Version Control”, then “Git”, and copy in the SSH link copied from your git repository.↩︎"
+  },
+  {
+    "objectID": "meeting-notes/meeting-1.html",
+    "href": "meeting-notes/meeting-1.html",
+    "title": "Meeting Title in /meeting-notes",
+    "section": "",
+    "text": "Etiam non efficitur urna, quis elementum nisi. Mauris posuere a augue vel gravida. Praesent luctus erat et ex iaculis interdum. Nulla vestibulum quam ac nunc consequat vulputate. Nullam iaculis lobortis sem sit amet fringilla. Aliquam semper, metus ut blandit semper, nulla velit fermentum sapien, fermentum ultrices dolor sapien sed leo. Vestibulum molestie faucibus magna, at feugiat nulla ullamcorper a. Aliquam erat volutpat. Praesent scelerisque magna a justo maximus, sit amet suscipit mauris tempor. Nulla nec dolor eget ipsum pellentesque lobortis a in ipsum. Morbi turpis turpis, fringilla a eleifend maximus, viverra nec neque. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos."
+  },
+  {
+    "objectID": "meeting-notes/meeting-1.html#meeting-goals",
+    "href": "meeting-notes/meeting-1.html#meeting-goals",
+    "title": "Meeting Title in /meeting-notes",
+    "section": "",
+    "text": "Etiam non efficitur urna, quis elementum nisi. Mauris posuere a augue vel gravida. Praesent luctus erat et ex iaculis interdum. Nulla vestibulum quam ac nunc consequat vulputate. Nullam iaculis lobortis sem sit amet fringilla. Aliquam semper, metus ut blandit semper, nulla velit fermentum sapien, fermentum ultrices dolor sapien sed leo. Vestibulum molestie faucibus magna, at feugiat nulla ullamcorper a. Aliquam erat volutpat. Praesent scelerisque magna a justo maximus, sit amet suscipit mauris tempor. Nulla nec dolor eget ipsum pellentesque lobortis a in ipsum. Morbi turpis turpis, fringilla a eleifend maximus, viverra nec neque. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos."
+  },
+  {
+    "objectID": "meeting-notes/meeting-1.html#things-to-think-about",
+    "href": "meeting-notes/meeting-1.html#things-to-think-about",
+    "title": "Meeting Title in /meeting-notes",
+    "section": "Things to think about",
+    "text": "Things to think about\nProin sodales neque erat, varius cursus diam tincidunt sit amet. Etiam scelerisque fringilla nisl eu venenatis. Donec sem ipsum, scelerisque ac venenatis quis, hendrerit vel mauris. Praesent semper erat sit amet purus condimentum, sit amet auctor mi feugiat. In hac habitasse platea dictumst. Nunc ac mauris in massa feugiat bibendum id in dui. Praesent accumsan urna at lacinia aliquet. Proin ultricies eu est quis pellentesque. In vel lorem at nisl rhoncus cursus eu quis mi. In eu rutrum ante, quis placerat justo. Etiam euismod nibh nibh, sed elementum nunc imperdiet in. Praesent gravida nunc vel odio lacinia, at tempus nisl placerat. Aenean id ipsum sed est sagittis hendrerit non in tortor."
+  },
+  {
+    "objectID": "meeting-notes/meeting-1.html#action-items",
+    "href": "meeting-notes/meeting-1.html#action-items",
+    "title": "Meeting Title in /meeting-notes",
+    "section": "Action items",
+    "text": "Action items\n\nTask 1\nTask 2"
+  },
+  {
+    "objectID": "projects/how-to.html",
+    "href": "projects/how-to.html",
+    "title": "How to create new projects",
+    "section": "",
+    "text": "The function qurtoutils::make_project(projectname = \"...\") simplifies the process of creating a new project subdirectory. A new directory is created under the projects/ directory, using the name specified in the argument projectname.\nThe project has the following directory structure:\n\nfs::dir_tree(\"project-1\")\n\nproject-1\n├── idea-note1.qmd\n├── index.qmd\n└── meeting-notes\n    └── meeting1.qmd\n\n\nThe index.qmd file for the project will automatically search for weekly meeting notes and reading notes that have the same projects tag as the name for the newly made project."
+  },
+  {
+    "objectID": "projects/project-1/index.html",
+    "href": "projects/project-1/index.html",
+    "title": "project-1",
+    "section": "",
+    "text": "Duis ornare ex ac iaculis pretium. Maecenas sagittis odio id erat pharetra, sit amet consectetur quam sollicitudin. Vivamus pharetra quam purus, nec sagittis risus pretium at. Nullam feugiat, turpis ac accumsan interdum, sem tellus blandit neque, id vulputate diam quam semper nisl. Donec sit amet enim at neque porttitor aliquet. Phasellus facilisis nulla eget placerat eleifend. Vestibulum non egestas eros, eget lobortis ipsum. Nulla rutrum massa eget enim aliquam, id porttitor erat luctus. Nunc sagittis quis eros eu sagittis. Pellentesque dictum, erat at pellentesque sollicitudin, justo augue pulvinar metus, quis rutrum est mi nec felis. Vestibulum efficitur mi lorem, at elementum purus tincidunt a. Aliquam finibus enim magna, vitae pellentesque erat faucibus at. Nulla mauris tellus, imperdiet id lobortis et, dignissim condimentum ipsum. Morbi nulla orci, varius at aliquet sed, facilisis id tortor. Donec ut urna nisi."
+  },
+  {
+    "objectID": "projects/project-1/index.html#about-this-project",
+    "href": "projects/project-1/index.html#about-this-project",
+    "title": "project-1",
+    "section": "",
+    "text": "Duis ornare ex ac iaculis pretium. Maecenas sagittis odio id erat pharetra, sit amet consectetur quam sollicitudin. Vivamus pharetra quam purus, nec sagittis risus pretium at. Nullam feugiat, turpis ac accumsan interdum, sem tellus blandit neque, id vulputate diam quam semper nisl. Donec sit amet enim at neque porttitor aliquet. Phasellus facilisis nulla eget placerat eleifend. Vestibulum non egestas eros, eget lobortis ipsum. Nulla rutrum massa eget enim aliquam, id porttitor erat luctus. Nunc sagittis quis eros eu sagittis. Pellentesque dictum, erat at pellentesque sollicitudin, justo augue pulvinar metus, quis rutrum est mi nec felis. Vestibulum efficitur mi lorem, at elementum purus tincidunt a. Aliquam finibus enim magna, vitae pellentesque erat faucibus at. Nulla mauris tellus, imperdiet id lobortis et, dignissim condimentum ipsum. Morbi nulla orci, varius at aliquet sed, facilisis id tortor. Donec ut urna nisi."
+  },
+  {
+    "objectID": "projects/project-1/index.html#concept-notes-and-other-ideas",
+    "href": "projects/project-1/index.html#concept-notes-and-other-ideas",
+    "title": "project-1",
+    "section": "Concept notes and other ideas",
+    "text": "Concept notes and other ideas\n\n\n\n\n\nDate\n\n\nTitle\n\n\n\n\n\n\nMar 11, 2025\n\n\nIdea note 1\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "projects/project-1/index.html#reading-notes",
+    "href": "projects/project-1/index.html#reading-notes",
+    "title": "project-1",
+    "section": "Reading notes",
+    "text": "Reading notes\n\n\n   \n     \n     \n       Order By\n       Default\n         \n          Title\n        \n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\nyear\n\n\nTitle\n\n\nAuthor\n\n\n\n\n\n\n2020\n\n\nDemo paper title\n\n\nDemo Author\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "projects/project-1/index.html#meeting-notes",
+    "href": "projects/project-1/index.html#meeting-notes",
+    "title": "project-1",
+    "section": "Meeting notes",
+    "text": "Meeting notes\n\n\n   \n     \n     \n       Order By\n       Default\n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Title\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\nDate\n\n\nTitle\n\n\nattendees\n\n\n\n\n\n\nMar 11, 2025\n\n\nMeeting Title\n\n\nPerson 1, Person 2\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "projects/project-1/index.html#weeks-in-which-i-worked-on-this-project",
+    "href": "projects/project-1/index.html#weeks-in-which-i-worked-on-this-project",
+    "title": "project-1",
+    "section": "Weeks in which I worked on this project",
+    "text": "Weeks in which I worked on this project\n\n\n\n\n\nTitle\n\n\nprojects\n\n\nkeywords\n\n\n\n\n\n\nWeek of 2025-03-03\n\n\nproject-1, project-2\n\n\n \n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "reading-notes/demopaper1.html",
+    "href": "reading-notes/demopaper1.html",
+    "title": "Demo paper title",
+    "section": "",
+    "text": "Etiam maximus accumsan gravida. Maecenas at nunc dignissim, euismod enim ac, bibendum ipsum. Maecenas vehicula velit in nisl aliquet ultricies. Nam eget massa interdum, maximus arcu vel, pretium erat. Maecenas sit amet tempor purus, vitae aliquet nunc. Vivamus cursus urna velit, eleifend dictum magna laoreet ut. Duis eu erat mollis, blandit magna id, tincidunt ipsum. Integer massa nibh, commodo eu ex vel, venenatis efficitur ligula. Integer convallis lacus elit, maximus eleifend lacus ornare ac. Vestibulum scelerisque viverra urna id lacinia. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Aenean eget enim at diam bibendum tincidunt eu non purus. Nullam id magna ultrices, sodales metus viverra, tempus turpis."
+  },
+  {
+    "objectID": "weekly-notes/index.html",
+    "href": "weekly-notes/index.html",
+    "title": "Weekly notes",
+    "section": "",
+    "text": "The function quartoutils::weekly_notes() makes it easy to create and edit a weekly notes file. Specifically, if a weekly notes file for the present week does not exist1, quartoutils::weekly_notes() will make this file, using a pre-determined template. If such a file already exists, quartoutils::weekly_notes() simply opens this file for you to edit. The file also automatically gets added to a table of all such files, which is accessible from the “Weekly Notes” landing page of the website. This functionality is demonstrated in the video below."
+  },
+  {
+    "objectID": "weekly-notes/index.html#footnotes",
+    "href": "weekly-notes/index.html#footnotes",
+    "title": "Weekly notes",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\ni.e. a file with the name week-of-YYYY-MM-DD.qmd, where yyyy-mm-dd is the year-month-date of the Monday of the current week↩︎"
+  }
+]

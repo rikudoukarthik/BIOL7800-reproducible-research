@@ -1,0 +1,30 @@
+[
+  {
+    "listing": "/reading-notes/index.html",
+    "items": [
+      "/reading-notes/demopaper1.html"
+    ]
+  },
+  {
+    "listing": "/meetings.html",
+    "items": [
+      "/projects/project-1/meeting-notes/meeting1.html",
+      "/meeting-notes/meeting-1.html"
+    ]
+  },
+  {
+    "listing": "/projects/project-1/index.html",
+    "items": [
+      "/projects/project-1/meeting-notes/meeting1.html",
+      "/reading-notes/demopaper1.html",
+      "/projects/project-1/idea-note1.html",
+      "/weekly-notes/week-of-2025-03-03.html"
+    ]
+  },
+  {
+    "listing": "/weekly-notes/index.html",
+    "items": [
+      "/weekly-notes/week-of-2025-03-03.html"
+    ]
+  }
+]
