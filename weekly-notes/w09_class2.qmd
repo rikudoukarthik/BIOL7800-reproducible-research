@@ -1,0 +1,27 @@
+---
+title: Semester project proposal presentation (notes) 
+execute:
+  warning: false
+editor_options: 
+  chunk_output_type: console
+---
+
+<!-- Title: Using functional and phylogenetic diversity to infer avian community assembly along elevational gradients -->
+- Goal of original study
+- Main results
+  - F/P diversity patterns with elevation (general idea is reduction)
+  - Determinism in these patterns (found no global pattern in clustering/overdispersion of F&P metrics across elevations
+  - Latitude (weak effect of latitude suggesting clustering of dispersion metrics in tropics)
+
+## Path to replication
+
+- Dataset (and code) availability, import into R, data exploration
+- Hurdles (specific test, library)
+  - Deterministic processes: getting SESs: data problem rather than software or computational problem (community matrix, trait and phylogeny data not available), **but can still run the LMMs**
+  - Effect of latitude: hierarchical multivariate meta-regression using `metafor` package (completely new to me), **but no latitude data in any case**!
+- Which specific results will I reproduce?
+  - Quadratic regression for patterns with elevation
+  - LMM for determinism in patterns with elevation (SES)
+  
+
+

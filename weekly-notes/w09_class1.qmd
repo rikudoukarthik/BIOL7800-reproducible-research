@@ -29,3 +29,7 @@ quarto use template https://gitlab.com/gklab/templates/lab-notebook-template-2/-
 - Argument to decide whether or not to create new `.Rproj` file 
 - Hotkey bindings for the functions (create new __) 
 - Argument to decide what categories (or which of the default 3) we want 
+- Is it possible to have certain `.qmd` files in this project also be rendered separately to `.pdf` or other formats, without it affecting the main notebook rendering? (e.g., grant/scholarship applications) 
+- "Notes" in category names can be removed, since the entire project is a notebook so redundant 
+- Additional category to Projects (in my case for Courses, another potentially for Side Projects/Collaborations) 
+- File called "Meeting Title in /meeting-notes" 
