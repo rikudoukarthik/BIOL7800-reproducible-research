@@ -1,0 +1,108 @@
+---
+title: Accessing data through R
+execute:
+  warning: false
+editor_options: 
+  chunk_output_type: console
+---
+
+Accessing US Census Bureau data:
+
+```{r}
+
+library("tidyverse")
+library("httr")
+library("jsonlite")
+
+# Path to US Census API
+path <- 'https://api.census.gov/data/2018/acs/acs5'
+
+# To use APIs, we need a good handle on the expected query parameters
+# Here, we are building a query for the B19013_001E database
+# and asking for data from all counties in state ID 55 (Wisconsin)
+# State codes are enumerated at
+# https://www.census.gov/library/reference/code-lists/ansi/ansi-codes-for-states.html
+query_params <- list('get' = 'NAME,B19013_001E', 
+                     'for' = 'county:*',
+                     'in' = 'state:55') 
+
+# UNCOMMENT the following line to run the API search
+# response <- GET(path, query = query_params)
+# saveRDS(response, file = "weekly-notes/w11_mdresponse.rds")
+response <- readRDS("weekly-notes/w11_mdresponse.rds")
+response |>
+ content(as = 'text') |> 
+ fromJSON() |> 
+  as_tibble()
+
+# We can now progress with this analysis as we choose.
+```
+
+Accessing GBIF occurrence API:
+
+```{r}
+path <- 'https://api.gbif.org/v1/occurrence/search'
+
+query_params <- list('country' = 'EC', 
+                     'elevation' = '500,750',
+                     'acceptedTaxonKey' = '6683') # See https://www.gbif.org/species/ to find taxonKey for your group
+
+# UNCOMMENT the following line to run the API search
+# response <- GET(path, query = query_params)
+# saveRDS(response, file = "weekly-notes/w11_melastome.rds")
+
+readRDS(file = "weekly-notes/w11_melastome.rds") |>
+# response |> 
+ content(as = 'text') |> 
+ fromJSON() |> 
+  pluck("results") |> 
+  as_tibble() |> 
+  select(where(is.character)) |> #View()#colnames()
+  select(12,27,33,40, 43)
+
+```
+
+# Databases
+
+Hadley's book chapter: [21 Databases](https://r4ds.hadley.nz/databases.html)
+
+- Database tables are stored on disk, whereas data frames are stored in memory.
+- Database tables (and data.tables) have indexes to get required row (like the index of a book), whereas data frames and tibbles do not.
+- Classical databases are optimised for rapidly collecting data, not analysing existing data. So, they are row-oriented. But nowadays there are more column-oriented databases which make analysis much faster.
+- Client-server, cloud, and in-process databases
+
+```{r}
+library(DBI)
+library(dbplyr)
+library(tidyverse)
+
+con <- DBI::dbConnect(duckdb::duckdb(), 
+                      dbdir = "duckdb") # store persistently
+```
+
+Add some data into the newly created database:
+
+```{r}
+dbWriteTable(con, "mpg", ggplot2::mpg)
+dbWriteTable(con, "diamonds", ggplot2::diamonds)
+```
+
+Check if data are loaded correctly, and run a test SQL query:
+
+```{r}
+dbListTables(con)
+#> [1] "diamonds" "mpg"
+
+con |> 
+  dbReadTable("diamonds") |> 
+  as_tibble()
+
+
+sql <- "
+  SELECT carat, cut, clarity, color, price 
+  FROM diamonds 
+  WHERE price > 15000
+"
+as_tibble(dbGetQuery(con, sql))
+```
+
