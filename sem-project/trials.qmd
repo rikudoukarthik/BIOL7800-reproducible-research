@@ -1,14 +1,44 @@
 ---
 title: "Trials for reproducing Montano-Centellas et al. (2020)"
 author: Karthik Thrikkadeeri
-date: 
 toc: true
 number-sections: false
 embed-resources: true
 bibliography: ../PhD.json
 theme: sandstone
 format: html
+execute:
+  warning: false
 editor_options: 
   chunk_output_type: console
 ---
+
+```{r}
+library(dplyr)
+library(readxl) # file is .xlsx
+library(glue)
+library(ggplot2); theme_set(theme_classic())
+
+data_dryad <- read_xlsx("data/montano_dryad_data.xlsx",
+                        sheet = "FDPD_Supporting")
+
+```
+
+## What are the diversity patterns? (Quadratic regressions)
+
+### Fitting the models
+
+The polynomial model is fit to each mountain separately, so need to iterate.
+
+```{r}
+data1 <- data_dryad %>% filter(Mountain == "Aguarague")
+
+model1 <- lm(FRic ~ elevation + I(elevation^2), data1)
+model1_summary <- summary(model1)
+
+t(model1$coefficients) %>% 
+  as_tibble() %>% 
+  magrittr::set_colnames(c("Intercept", "Elevation", "Elevation2"))
+
+```
 
