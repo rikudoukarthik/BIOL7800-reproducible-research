@@ -18,6 +18,7 @@ library(dplyr)
 library(readxl) # file is .xlsx
 library(glue)
 library(ggplot2); theme_set(theme_classic())
+library(purrr)
 
 data_dryad <- read_xlsx("data/montano_dryad_data.xlsx",
                         sheet = "FDPD_Supporting")
@@ -31,14 +32,28 @@ data_dryad <- read_xlsx("data/montano_dryad_data.xlsx",
 The polynomial model is fit to each mountain separately, so need to iterate.
 
 ```{r}
-data1 <- data_dryad %>% filter(Mountain == "Aguarague")
 
-model1 <- lm(FRic ~ elevation + I(elevation^2), data1)
-model1_summary <- summary(model1)
+# iterate over each mountain in the dataset:
+# fit LM of FRic against linear and second-order polynomial terms of Elevation
+# extract intercept and coefficients for both Elevation terms
+# aggregate all these values over all mountains
 
-t(model1$coefficients) %>% 
-  as_tibble() %>% 
-  magrittr::set_colnames(c("Intercept", "Elevation", "Elevation2"))
+map(unique(data_dryad$Mountain), ~ {
+  
+  data_mount <- data_dryad %>% filter(Mountain == .x)
+  
+  model_mount <- lm(FRic ~ elevation + I(elevation^2), data_mount)
+  model_mount_summary <- summary(model_mount)
+  
+  t(model_mount$coefficients) %>% 
+    as_tibble() %>% 
+    magrittr::set_colnames(c("Intercept", "Elevation", "Elevation2")) %>% 
+    bind_cols(tibble(Mountain = .x))
+  
+}) %>% 
+  list_rbind()
+
+
 
 ```
 
