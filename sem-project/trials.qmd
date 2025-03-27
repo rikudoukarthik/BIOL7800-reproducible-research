@@ -38,22 +38,27 @@ The polynomial model is fit to each mountain separately, so need to iterate.
 # extract intercept and coefficients for both Elevation terms
 # aggregate all these values over all mountains
 
-map(unique(data_dryad$Mountain), ~ {
+list_mount <- unique(data_dryad$Mountain)
+metric_cols <- c("FRic", "FDis", "PD", "MPD")
+to_iter <- expand.grid(mountain = list_mount, metric = metric_cols)
+
+quad_reg <- map2(to_iter$mountain, to_iter$metric, ~ {
   
   data_mount <- data_dryad %>% filter(Mountain == .x)
   
-  model_mount <- lm(FRic ~ elevation + I(elevation^2), data_mount)
+  model_formula <- as.formula(glue("{.y} ~ elevation + I(elevation^2)"))
+  
+  model_mount <- lm(model_formula, data_mount)
   model_mount_summary <- summary(model_mount)
   
   t(model_mount$coefficients) %>% 
     as_tibble() %>% 
     magrittr::set_colnames(c("Intercept", "Elevation", "Elevation2")) %>% 
-    bind_cols(tibble(Mountain = .x))
+    bind_cols(tibble(mountain = .x, metric = .y))
   
 }) %>% 
-  list_rbind()
-
-
+  list_rbind() %>% 
+  relocate(metric, mountain)
 
 ```
 
