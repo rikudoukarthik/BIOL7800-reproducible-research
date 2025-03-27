@@ -25,11 +25,13 @@ data_dryad <- read_xlsx("data/montano_dryad_data.xlsx",
 
 ```
 
+[Appendix S2](https://onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1111%2Fgeb.13021&file=geb13021-sup-0001-Supinfo.pdf) available online.
+
 ## What are the diversity patterns? (Quadratic regressions)
 
 ### Fitting the models
 
-The polynomial model is fit to each mountain separately, so need to iterate.
+The polynomial model is fit to each mountain separately, so need to iterate. We also need to predict responses across the elevations.
 
 ```{r}
 
@@ -45,20 +47,25 @@ to_iter <- expand.grid(mountain = list_mount, metric = metric_cols)
 quad_reg <- map2(to_iter$mountain, to_iter$metric, ~ {
   
   data_mount <- data_dryad %>% filter(Mountain == .x)
-  
   model_formula <- as.formula(glue("{.y} ~ elevation + I(elevation^2)"))
-  
   model_mount <- lm(model_formula, data_mount)
-  model_mount_summary <- summary(model_mount)
   
+  # predict only for elevations present in each mountain
+  to_pred <- data_mount %>% distinct(Mountain, elevation)
+  # predict
+  model_pred <- predict(model_mount, newdata = to_pred, type = "response")
+  pred <- bind_cols(to_pred, pred = model_pred)
+
   t(model_mount$coefficients) %>% 
     as_tibble() %>% 
     magrittr::set_colnames(c("Intercept", "Elevation", "Elevation2")) %>% 
-    bind_cols(tibble(mountain = .x, metric = .y))
+    bind_cols(tibble(mountain = .x, metric = .y)) %>% 
+    left_join(pred, by = c("mountain" = "Mountain"))
   
 }) %>% 
   list_rbind() %>% 
-  relocate(metric, mountain)
+  relocate(metric, mountain) # bring metric and mountain cols to the start
 
 ```
 
+Once we have the predictions, we need to plot them and inspect the patterns.
