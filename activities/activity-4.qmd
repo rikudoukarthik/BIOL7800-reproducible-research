@@ -2,20 +2,27 @@
 title: "Activity 4: Status report on semester project"
 author: Karthik Thrikkadeeri
 date: 2025-04-10
-toc: true
+toc: false
 number-sections: false
 embed-resources: true
 bibliography: ../PhD.json
 csl: ../the-american-naturalist.csl
 theme: sandstone
-format: pdf
+format: 
+  pdf:
+    include-in-header: 
+    # https://github.com/quarto-dev/quarto-cli/discussions/6772
+      text: '\usepackage{lineno}'
+    include-before-body:
+      text: |
+        \linenumbers 
+        <!-- default font is "tiny" -->
+        \renewcommand\linenumberfont{\normalfont\small\sffamily} 
+    sansfont: "Petrona"
+    linestretch: 2
 editor_options: 
   chunk_output_type: console
 ---
-
-- double-spaced
-- page & line numbers for everything except title and author
-- change font of headings and subheadings
 
 # Background
 
