@@ -1,0 +1,43 @@
+---
+title: "Activity 4: Status report on semester project"
+author: Karthik Thrikkadeeri
+date: 2025-04-10
+toc: true
+number-sections: false
+embed-resources: true
+bibliography: ../PhD.json
+csl: ../the-american-naturalist.csl
+theme: sandstone
+format: pdf
+editor_options: 
+  chunk_output_type: console
+---
+
+- double-spaced
+- page & line numbers for everything except title and author
+- change font of headings and subheadings
+
+# Background
+
+- one paragraph overview, with >= 5 citations to papers that motivate the research [e.g., @montano-centellas2020]
+
+# Process
+
+- 1--2 paragraphs; narrative describing process
+- retrieving raw data sets
+- confusions re. methods of original paper
+- summary of what have/haven't been able to reproduce
+- new analyses or packages learned, with citations to all packages being used
+
+# Reproducible research code
+
+- code to reproduce results
+- at least two plots or analyses similar to original paper
+- *try to show code from `sem-project/trials.qmd` without copy-pasting*
+
+# Remaining steps and hurdles
+
+- next steps, concerns
+- plans to tackle above
+
+# References
