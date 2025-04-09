@@ -1,5 +1,5 @@
 ---
-title: "Trials for reproducing Montano-Centellas et al. (2020)"
+title: "Reproducing Montano-Centellas et al. (2020)"
 author: Karthik Thrikkadeeri
 toc: true
 number-sections: false
@@ -36,7 +36,7 @@ The polynomial model is fit to each mountain separately, so need to iterate. We 
 ```{r}
 
 # iterate over each mountain in the dataset:
-# fit LM of FRic against linear and second-order polynomial terms of Elevation
+# fit LM of each metric against linear and second-order polynomial terms of Elevation
 # extract intercept and coefficients for both Elevation terms
 # aggregate all these values over all mountains
 
