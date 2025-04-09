@@ -20,6 +20,9 @@ library(glue)
 library(ggplot2); theme_set(theme_classic())
 library(purrr)
 
+# colour palette to match that used in paper
+scale_col_pal <- scale_color_brewer(palette = "Dark2")
+
 data_dryad <- read_xlsx("data/montano_dryad_data.xlsx",
                         sheet = "FDPD_Supporting")
 
@@ -58,7 +61,7 @@ quad_reg <- map2(to_iter$mountain, to_iter$metric, ~ {
 
   t(model_mount$coefficients) %>% 
     as_tibble() %>% 
-    magrittr::set_colnames(c("Intercept", "Elevation", "Elevation2")) %>% 
+    magrittr::set_colnames(c("intercept", "coef_linear", "coef_poly")) %>% 
     bind_cols(tibble(mountain = .x, metric = .y)) %>% 
     left_join(pred, by = c("mountain" = "Mountain"))
   
@@ -68,4 +71,26 @@ quad_reg <- map2(to_iter$mountain, to_iter$metric, ~ {
 
 ```
 
+### Plotting predicted elevational patterns
+
 Once we have the predictions, we need to plot them and inspect the patterns.
+
+```{r}
+#| fig-asp: 1.5
+
+quad_reg %>% 
+  ggplot(aes(x = elevation, y = pred, col = mountain)) +
+  geom_line() +
+  facet_wrap(~ metric, ncol = 1, scales = "free_y", strip.position = "left") + 
+  labs(x = "Elevation", y = "") +
+  # scale_col_pal + # only makes sense to colour scheme after classifying into 8 categs
+  theme(panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
+        # match strip format in paper
+        strip.background = element_rect(colour = NA),
+        strip.placement = "outside",
+        strip.text = element_text(size = 10),
+        # remove colour key
+        legend.position = "none") 
+
+```
+
