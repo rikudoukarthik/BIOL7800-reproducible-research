@@ -1,0 +1,60 @@
+---
+title: Slides using Quarto
+# embed-resources: false
+format: 
+  revealjs:
+    # scrollable: true
+    # theme: dark
+    slide-number: c/t
+    # chalkboard: TRUE # only works if embed-resources is false
+editor_options: 
+  chunk_output_type: console
+---
+
+# hello
+
+##
+
+# heading of second slide
+
+### does level 3 heading create a new slide?
+
+No, it does not. 
+
+How many lines is enough?
+
+1?
+
+2?
+
+3?
+
+4?
+
+5?
+
+Plus 5?
+
+Too many options.
+
+Let
+
+me
+
+hear
+
+you
+
+say
+
+MUSTAAAAAAAARD
+
+# SECTION HEADING
+
+## another slide heading
+
+Actual text
+
+##
+
+Nice clean theme ([link](https://grantmcdermott.com/quarto-revealjs-clean-demo/template.html#/title-slide))
