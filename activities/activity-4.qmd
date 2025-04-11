@@ -5,7 +5,7 @@ date: 2025-04-10
 toc: false
 number-sections: false
 embed-resources: true
-bibliography: ../PhD.json
+bibliography: activity-4-ref.bib
 csl: ../the-american-naturalist.csl
 theme: sandstone
 format: 
@@ -20,31 +20,250 @@ format:
         \renewcommand\linenumberfont{\normalfont\small\sffamily} 
     sansfont: "Petrona"
     linestretch: 2
+execute:
+  warning: false
 editor_options: 
   chunk_output_type: console
 ---
 
 # Background
 
-- one paragraph overview, with >= 5 citations to papers that motivate the research [e.g., @montano-centellas2020]
+Ecologists have long been fascinated by patterns of biodiversity along environmental gradients and the mechanisms driving these patterns [@ricklefs2004]. For the specific question of how communities of organisms are assembled with certain species, there are two main factors generally believed to play a role: environmental filtering and biotic interactions [@cavender2009]. Considering the functional and phylogenetic structure of communities can provide insight into the relative importance of these drivers of community assembly [@cavender2009; @webb2002]. Particularly, assemblages of species more clustered or dispersed in function or phylogeny than expected by chance can hint at strong effects of environmental filtering or competitive interactions [@lebrija2010; @mayfield2010]. Elevational gradients are interesting from this perspective, due to their rapid turnover of environmental conditions creating complex sets of habitats and climate zones [@graham2014]. Previous studies on this topic have focused on taxonomic diversity of community assemblages and found that species richness either decreases with elevation or peaks at mid-elevations [e.g., @mccain2009], while the limited number of studies focusing on functional and phylogenetic diversity have found decreasing trends within single mountains [e.g., @hanz2019]. To test for the generality of these patterns and their deterministic strengths, @montano2020 analysed a large dataset of resident birds of 46 mountains across the globe.
 
 # Process
 
-- 1--2 paragraphs; narrative describing process
-- retrieving raw data sets
-- confusions re. methods of original paper
-- summary of what have/haven't been able to reproduce
-- new analyses or packages learned, with citations to all packages being used
+The process of obtaining the data for this (re)analysis was challenging because the authors have not provided the raw datasets, but also simple at the same time because the processed dataset has been made available on [Dryad](https://doi.org/10.5061/dryad.tqjq2bvtc). I simply downloaded the single data file and stored it in my repository at `data/montano_dryad_data.xlsx`. This file contains functional and phylogenetic richness and diversity metrics calculated at the level of 100 m elevation bands across 46 mountains of the world, along with their SESs and corresponding p-values. 
+
+Of the three main results from the paper I wanted to reproduce, I will not be able to reproduce the final analysis of the effect of latitude on patterns of elevational change, because latitude information is missing from the dataset available. The other two seem feasible to reproduce, but I have so far only been able to reproduce the first, quadratic regressions for patterns of bird functional and phylogenetic diversity along elevational gradients of the world. Although the authors mention "classifying" each elevational pattern using slope and intercept values from the model results, they do not provide code for this which suggests that they used manual classification. I have tried to achieve the same results using a programmatic approach. For the second result, again, since we do not have access to the original trait and phylogeny data, I am limited to using SES values that they have already calculated for each metric. This means many of the intermediate steps are ambiguous, and I can only assume reproducibility and absence of errors.
+
+```{r, include=FALSE}
+# obtaining package citations
+
+citation("metafor")
+citation("lme4")
+citation("stats")
+
+citation("dplyr")
+citation("readxl")
+citation("glue")
+citation("ggplot2")
+citation("purrr")
+```
+
+One R package in this analysis was new to me, the `metafor` package [@viechtbauer2010] used to run hierarchical multivariate meta-regression testing for the effect of latitude on patterns of deterministic signal. Aside from this, the authors also used `lme4` [@bates2015] and `stats` [@rcoreteam2025] packages for the analyses. Whereas, for reproducing their analysis, I am currently using the following additional packages: `dplyr` [@wickham2023a], `readxl` [@wickham2023b], `glue` [@hester2024], `ggplot2` [@wickham2016], `purrr` [@wickham2023c], and `broom` [@robinson2024].
 
 # Reproducible research code
 
-- code to reproduce results
-- at least two plots or analyses similar to original paper
-- *try to show code from `sem-project/trials.qmd` without copy-pasting*
+The below code sets up everything required to run the analyses:
+
+```{r}
+library(dplyr)
+library(readxl) # file is .xlsx
+library(glue)
+library(ggplot2); theme_set(theme_classic())
+library(purrr)
+library(broom) # to easily access p-value from model objects
+
+# colour palette to match that used in paper
+scale_col_pal <- scale_color_brewer(palette = "Dark2", na.value = "grey50")
+scale_fill_pal <- scale_fill_brewer(palette = "Dark2", na.value = "grey50")
+
+data_dryad <- read_xlsx("data/montano_dryad_data.xlsx",
+                        sheet = "FDPD_Supporting")
+
+# load functions for classification
+source("sem-project/class_functions.R")
+```
+
+For the first analysis to obtain patterns of diversity metrics across elevations, I first need to fit the polynomial model for each of the four diversity metrics across all 46 mountains individually, and then extract the intercept and coefficients for each as well as predict responses across elevations.
+
+```{r}
+# iterate over each mountain in the dataset:
+# fit LM of each metric against linear and second-order polynomial terms of Elevation
+# extract intercept and coefficients for both Elevation terms
+# aggregate all these values over all mountains
+
+list_mount <- unique(data_dryad$Mountain)
+metric_cols <- c("FRic", "FDis", "PD", "MPD")
+to_iter <- expand.grid(mountain = list_mount, metric = metric_cols)
+
+quad_reg <- map2(to_iter$mountain, to_iter$metric, ~ {
+  
+  data_mount <- data_dryad %>% filter(Mountain == .x)
+  model_formula <- as.formula(glue("{.y} ~ elevation + I(elevation^2)"))
+  model_mount <- lm(model_formula, data_mount)
+  
+  # predict only for elevations present in each mountain
+  to_pred <- data_mount %>% distinct(Mountain, elevation)
+  # predict
+  model_pred <- predict(model_mount, newdata = to_pred, type = "response")
+  pred <- bind_cols(to_pred, pred = model_pred)
+  
+  # store p-value of model fit
+  p <- broom::glance(model_mount) %>% pull(p.value)
+
+  t(model_mount$coefficients) %>% 
+    as_tibble() %>% 
+    magrittr::set_colnames(c("intercept", "coef_linear", "coef_poly")) %>% 
+    bind_cols(tibble(mountain = .x, metric = .y, pval = p)) %>% 
+    left_join(pred, by = c("mountain" = "Mountain"))
+  
+}) %>% 
+  list_rbind() %>% 
+  relocate(metric, mountain) # bring metric and mountain cols to the start
+```
+
+I then need to plot the predicted values and classify the trends into the nine categories the authors used: Increasing, Decreasing, Mid Peak, Mid Valley, Low Plateau (Peak), High Plateau (Peak), Low Valley, High Valley, and NS for non-significant. 
+
+```{r}
+#| fig-asp: 1.5
+
+quad_reg %>% 
+  ggplot(aes(x = elevation, y = pred, col = mountain)) +
+  geom_line() +
+  facet_wrap(~ metric, ncol = 1, scales = "free_y", strip.position = "left") + 
+  labs(x = "Elevation", y = "") +
+  # scale_col_pal + # only makes sense to colour scheme after classifying into 8 categs
+  theme(panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
+        # match strip format in paper
+        strip.background = element_rect(colour = NA),
+        strip.placement = "outside",
+        strip.text = element_text(size = 10),
+        # remove colour key
+        legend.position = "none") 
+
+```
+
+The predicted values match up well with what the authors obtained. They do not specify how exactly they achieved the classification, and it seems to have been done manually. However, I want to do this programmatically, for which I first create a set of custom functions:
+
+```{r}
+# get inflection point
+
+get_inflection <- function(data) {
+  
+  data %>% 
+    group_by(metric, mountain) %>% 
+    # calculate simple diff
+    mutate(pred_min1 = lag(pred, default = first(pred)),
+           pred_plus1 = lead(pred, default = last(pred))) %>% 
+    mutate(pred_diff = pred - pred_min1) %>% 
+    # decide whether or not that elevational band is an inflection point for the trend
+    # only need lead, since we want just one elevation to be inflection point
+    # get two TRUEs if use lead and lag
+    mutate(pred_diff_plus1 = lead(pred_diff, default = last(pred_diff))) %>% 
+    mutate(inflection = case_when(
+      # if first or last elevational band, not inflection
+      (pred_min1 == pred | pred_plus1 == pred) ~ FALSE,
+      
+      (pred_diff_plus1 >= 0 & pred_diff >= 0) |
+        (pred_diff_plus1 <= 0 & pred_diff <= 0) ~ FALSE,
+      
+      TRUE ~ TRUE
+    )) %>% 
+    # select(-contains("1")) %>% 
+    select(metric, mountain, elevation, pval, pred, pred_diff, inflection) %>% 
+    ungroup()
+  
+}
+
+
+# classify elevational bands into L, M, H
+
+get_elev_cats <- function(data) {
+  
+  data_cats <- data %>% 
+    distinct(mountain, elevation) %>% 
+    group_by(mountain) %>% 
+    mutate(elev_min = min(elevation),
+           elev_max = max(elevation)) %>% 
+    # could do ceiling and floor for first and second if we want to be conservative, or opposite if inverse
+    # but leave it like this for now
+    mutate(elev_thresh1 = round(quantile(elevation, probs = 1/3), -2),
+           elev_thresh2 = round(quantile(elevation, probs = 2/3), -2)) %>% 
+    group_by(mountain, elevation) %>% 
+    reframe(elev_cat = case_when(
+      elevation < elev_thresh1 ~ "LOW",
+      elevation > elev_thresh2 ~ "HIGH",
+      TRUE ~ "MID"
+    )) 
+  
+  data %>% left_join(data_cats, by = c("mountain", "elevation"))
+ 
+  # Mikura-Jima is the mountain with fewest elevational bands classified as MID 
+  # but n = 3 (> 2) so this is fine
+   
+}
+
+
+# classify trends as valley or peak
+
+class_valley_peak <- function(data) {
+  
+  data_class <- data %>% 
+    group_by(metric, mountain) %>% 
+    filter(elev_cat == "LOW") %>% 
+    reframe(valleypeak = case_when(
+      nth(pred_diff, 2) < 0 ~ "valley",
+      nth(pred_diff, 2) > 0 ~ "peak",
+      TRUE ~ NA
+    )) 
+  
+  data %>% left_join(data_class, by = c("metric", "mountain"))
+  
+}
+
+```
+
+I then code the classification pipeline:
+
+```{r}
+#| fig-asp: 1.5
+
+# classify elevational trends
+
+quad_reg_class <- quad_reg %>% 
+  get_inflection() %>% 
+  get_elev_cats() %>% 
+  class_valley_peak() %>% 
+  group_by(metric, mountain) %>% 
+  reframe(trend = case_when(
+    min(pval) > 0.1 ~ "NS",
+    
+    all(inflection == FALSE) & all(pred_diff >= 0) ~ "Increasing",
+    all(inflection == FALSE) & all(pred_diff <= 0) ~ "Decreasing",
+    
+    all(valleypeak == "valley") & all(!(inflection == TRUE & elev_cat != "LOW")) ~ "Low Valley",
+    all(valleypeak == "valley") & all(!(inflection == TRUE & elev_cat != "HIGH")) ~ "High Valley",
+    all(valleypeak == "valley") & all(!(inflection == TRUE & elev_cat != "MID")) ~ "Mid Valley",
+    
+    all(valleypeak == "peak") & all(!(inflection == TRUE & elev_cat != "LOW")) ~ "Low Peak",
+    all(valleypeak == "peak") & all(!(inflection == TRUE & elev_cat != "HIGH")) ~ "High Peak",
+    all(valleypeak == "peak") & all(!(inflection == TRUE & elev_cat != "MID")) ~ "Mid Peak",
+    
+    TRUE ~ NA
+  )) 
+
+# plot frequency bar graph of different trend types
+quad_reg_class %>% 
+  mutate(trend = factor(trend, 
+                         levels = c("Increasing", "Decreasing", "Mid Peak", "Mid Valley",
+                                    "Low Peak", "Low Valley", "High Peak", "High Valley", "NS"))) %>% 
+  group_by(metric) %>% 
+  count(trend) %>% 
+  ggplot() +
+  geom_col(aes(x = trend, y = n, fill = trend)) +
+  facet_wrap(~ metric, ncol = 1) +
+  scale_fill_pal +
+  theme(legend.position = "none")
+
+```
+
+As expected, there is a discrepancy in the frequency bar graph of classified trends, despite the overall similarity in proportions.
 
 # Remaining steps and hurdles
 
-- next steps, concerns
-- plans to tackle above
+Firstly, I need to recheck my programmatic classification method to ensure there are no errors and that the classification I obtained is sensible. I will also try to understand what exact differences in methodology have led to this discrepancy. But regardless of this, the broader inferences might still remain the same.
+
+Then, I will work on the second main analysis of the paper, looking at trends in deterministic strength of these elevational patterns. I do not have any major concerns for this part, since I do not foresee any steps in the methodology that have not been explicitly mentioned.
 
 # References

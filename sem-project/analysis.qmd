@@ -19,13 +19,17 @@ library(readxl) # file is .xlsx
 library(glue)
 library(ggplot2); theme_set(theme_classic())
 library(purrr)
+library(broom) # to easily access p-value from model objects
 
 # colour palette to match that used in paper
-scale_col_pal <- scale_color_brewer(palette = "Dark2")
+scale_col_pal <- scale_color_brewer(palette = "Dark2", na.value = "grey50")
+scale_fill_pal <- scale_fill_brewer(palette = "Dark2", na.value = "grey50")
 
 data_dryad <- read_xlsx("data/montano_dryad_data.xlsx",
                         sheet = "FDPD_Supporting")
 
+# load functions for classification
+source("sem-project/class_functions.R")
 ```
 
 [Appendix S2](https://onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1111%2Fgeb.13021&file=geb13021-sup-0001-Supinfo.pdf) available online.
@@ -58,11 +62,14 @@ quad_reg <- map2(to_iter$mountain, to_iter$metric, ~ {
   # predict
   model_pred <- predict(model_mount, newdata = to_pred, type = "response")
   pred <- bind_cols(to_pred, pred = model_pred)
+  
+  # store p-value of model fit
+  p <- broom::glance(model_mount) %>% pull(p.value)
 
   t(model_mount$coefficients) %>% 
     as_tibble() %>% 
     magrittr::set_colnames(c("intercept", "coef_linear", "coef_poly")) %>% 
-    bind_cols(tibble(mountain = .x, metric = .y)) %>% 
+    bind_cols(tibble(mountain = .x, metric = .y, pval = p)) %>% 
     left_join(pred, by = c("mountain" = "Mountain"))
   
 }) %>% 
@@ -94,3 +101,48 @@ quad_reg %>%
 
 ```
 
+### Classifying elevational patterns
+
+Next, need to classify the predicted elevational pattern for each mountain into one of eight categories: Increasing, Decreasing, Mid Peak, Mid Valley, Low Plateau (Peak), High Plateau (Peak), Low Valley, High Valley (and NS for non-significant). 
+
+```{r}
+#| fig-asp: 1.5
+
+# classify elevational trends
+
+quad_reg_class <- quad_reg %>% 
+  get_inflection() %>% 
+  get_elev_cats() %>% 
+  class_valley_peak() %>% 
+  group_by(metric, mountain) %>% 
+  reframe(trend = case_when(
+    min(pval) > 0.1 ~ "NS",
+    
+    all(inflection == FALSE) & all(pred_diff >= 0) ~ "Increasing",
+    all(inflection == FALSE) & all(pred_diff <= 0) ~ "Decreasing",
+    
+    all(valleypeak == "valley") & all(!(inflection == TRUE & elev_cat != "LOW")) ~ "Low Valley",
+    all(valleypeak == "valley") & all(!(inflection == TRUE & elev_cat != "HIGH")) ~ "High Valley",
+    all(valleypeak == "valley") & all(!(inflection == TRUE & elev_cat != "MID")) ~ "Mid Valley",
+    
+    all(valleypeak == "peak") & all(!(inflection == TRUE & elev_cat != "LOW")) ~ "Low Peak",
+    all(valleypeak == "peak") & all(!(inflection == TRUE & elev_cat != "HIGH")) ~ "High Peak",
+    all(valleypeak == "peak") & all(!(inflection == TRUE & elev_cat != "MID")) ~ "Mid Peak",
+    
+    TRUE ~ NA
+  )) 
+
+# plot frequency bar graph of different trend types
+quad_reg_class %>% 
+  mutate(trend = factor(trend, 
+                         levels = c("Increasing", "Decreasing", "Mid Peak", "Mid Valley",
+                                    "Low Peak", "Low Valley", "High Peak", "High Valley", "NS"))) %>% 
+  group_by(metric) %>% 
+  count(trend) %>% 
+  ggplot() +
+  geom_col(aes(x = trend, y = n, fill = trend)) +
+  facet_wrap(~ metric, ncol = 1) +
+  scale_fill_pal +
+  theme(legend.position = "none")
+
+```
