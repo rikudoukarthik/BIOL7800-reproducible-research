@@ -1,0 +1,39 @@
+---
+title: Advanced collaborations
+format: 
+  html:
+    comments:
+      hypothesis: true
+editor_options: 
+  chunk_output_type: console
+---
+
+
+Think for yourself:
+
+- Who do you expect to collaborate with during your research program?
+- Across how many institutes, countries, languages, and disciplines can you envision collaborating?
+
+# Using `renv`
+
+Two ways to initiate:
+
+- Either when starting new project, select "use renv with this project"
+- `renv::init()`
+
+The process would be as follows:
+
+- When working in a project with `renv`, cannot load packages with `library()` before running `renv::install()` first.
+- Once installed, other users automatically get the same versions cemented in the renv files:
+  - `renv::snapshot()` cements everything.
+  - When others pulling, to make sure of access to all required packages, `renv::activate()`. 
+  
+# Collaboration & reviewing Quarto documents
+
+```{r, eval=FALSE}
+format:
+  html:
+    comments:
+      hypothesis: true
+```
+
