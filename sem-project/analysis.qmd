@@ -15,24 +15,51 @@ editor_options:
 
 ```{r}
 library(dplyr)
+library(tidyr)
+library(stringr)
 library(readxl) # file is .xlsx
 library(glue)
 library(ggplot2); theme_set(theme_classic())
 library(purrr)
 library(broom) # to easily access p-value from model objects
+library(broom.mixed) # for mixed models
+library(lme4)
 
 # colour palette to match that used in paper
 scale_col_pal <- scale_color_brewer(palette = "Dark2", na.value = "grey50")
 scale_fill_pal <- scale_fill_brewer(palette = "Dark2", na.value = "grey50")
 
-data_dryad <- read_xlsx("data/montano_dryad_data.xlsx",
-                        sheet = "FDPD_Supporting")
 
 # load functions for classification
-source("sem-project/class_functions.R")
+source("sem-project/functions.R")
+
+data_dryad <- read_xlsx("data/montano_dryad_data.xlsx",
+                        sheet = "FDPD_Supporting") %>% 
+  # normalise elevations per mountain
+  group_by(Mountain) %>% 
+  mutate(elevation_norm = norm_fn(elevation)) %>% 
+  # just realised that's not what they actually did; they just scaled and centred on 0
+  mutate(elevation_scaled = scale(elevation)[,1]) %>% 
+  ungroup()
 ```
 
 [Appendix S2](https://onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1111%2Fgeb.13021&file=geb13021-sup-0001-Supinfo.pdf) available online.
+
+## Summary of reproduction
+
+The core results of my chosen study were: 
+
+1. Patterns of bird functional and phylogenetic diversity along elevational gradients of the world (quadratic regression model, Figure 2) 
+1. Trends in bird functional and phylogenetic diversity along elevational gradients of the world, after controlling for species richness (quadratic polynomial regression models for individual mountains and for all mountains together, Figure 3, Table 1) 
+1. Deterministic processes driving global patterns (Figure 4, Table 2) 
+    - Effect of latitude on patterns of elevational change (Figure 4)
+    
+Of these, I wanted to reproduce 1 and 2, while 3 was not possible due to absence of latitude data for the mountains. Below is the summary of what I was able to reproduce for 1 and 2.
+
+- I performed the quadratic regression with the diversity metrics to obtain classifications of elevational patterns. 
+    - Overall trends in the results match what the original authors found, but because of a potential mismatch in methods used to classify each elevational trend (I tried to do it programmatically), the trends in some mountains have been classified differently. 
+- I performed the regressions using SES values of each metric to understand overall determinism in elevational trends of diversity. 
+    - I had to skip the step of actually calculating SES values, since the authors have not provided the original trait and phylogeny data, or the community data matrix. So, several potentially error-prone steps have been ignored, which should be kept in mind when assessing the overall reproducibility of this analysis. 
 
 ## What are the diversity patterns? (Quadratic regressions)
 
@@ -146,3 +173,129 @@ quad_reg_class %>%
   theme(legend.position = "none")
 
 ```
+
+## How deterministic are these elevational patterns?
+
+Were observed functional and phylogenetic diversities different than expected given random assembly? To answer this, the authors first constructed null models by randomising trait phylogeny tip labels over 1000 runs while fixing the rows and columns of the community data matrix. The average values of diversity metrics for this null model was then compared with the observed metrics, as deviation. These deviations were then standardised to allow comparisons across assemblages, which was referred to as Standardised Effect Size (SES). 
+
+This entire process is not reproducible, since we do not have access to the raw data. Instead, I need to start with the calculated SES values, and directly fit the linear mixed-effects model testing the diversity metrics as a function of normalised elevation scaled to between -1 and 1.
+
+However, according to Figure 3, they have not only run this single LMM across mountains (with mountain as random effect) but have also fit new linear models for each mountain separately---as done in the previous analysis but this time using scaled elevation instead.
+
+*For the record, there is a discrepancy in methods described in the paper; in section 2.3 on page 5 (last line), the elevation variable is said to have been normalised between -1 and 1, but according to the caption for Figure 3 (and judging from the grey raw data points plotted), elevation was actually just scaled and centred on 0.*
+
+### Fitting individual mountain models
+
+```{r}
+# iterate over each mountain in the dataset:
+# fit LM of each metric against linear and second-order polynomial terms of scaled elevation
+# extract model predictions for each mountain
+
+metric_sess <- glue("SES.{metric_cols}")
+to_iter <- expand.grid(mountain = list_mount, metric = metric_sess)
+
+quad_reg_ses <- map2(to_iter$mountain, to_iter$metric, ~ {
+  
+  data_mount <- data_dryad %>% filter(Mountain == .x)
+  model_formula <- as.formula(glue("{.y} ~ elevation_scaled + I(elevation_scaled^2)"))
+  model_mount <- lm(model_formula, data_mount)
+  
+  # predict only for elevations present in each mountain
+  to_pred <- data_mount %>% distinct(Mountain, elevation_scaled)
+  # predict
+  model_pred <- predict(model_mount, newdata = to_pred, type = "response")
+  pred <- bind_cols(to_pred, pred = model_pred)
+  
+  tibble(mountain = .x, metric = .y) %>% 
+    left_join(pred, by = c("mountain" = "Mountain"))
+  
+}) %>% 
+  list_rbind() %>% 
+  relocate(metric, mountain) %>% # bring metric and mountain cols to the start
+  mutate(metric = factor(metric,
+                         levels = c("SES.FRic", "SES.FDis", "SES.PD", "SES.MPD")))
+
+# summarise original data to plot raw data points
+
+data_dryad_ses <- data_dryad %>% 
+  select(Mountain, elevation_scaled, starts_with("SES")) %>% 
+  pivot_longer(cols = starts_with("SES"), 
+               names_to = "metric", values_to = "obs") %>% 
+  rename(mountain = Mountain) %>% 
+  mutate(metric = factor(metric,
+                         levels = c("SES.FRic", "SES.FDis", "SES.PD", "SES.MPD")))
+```
+
+### Fitting mixed-effects model across all mountains
+
+```{r}
+quad_lmm_ses_output <- map(metric_sess, ~ {
+  
+  model_formula <- as.formula(glue("{.x} ~ elevation_scaled + I(elevation_scaled^2) + (1 | Mountain)"))
+  model_ses <- lmer(model_formula, data_dryad, REML = FALSE) # because we use Likelihood Ratio Test
+  
+  # predict only for elevations present in each mountain
+  to_pred <- data_dryad %>% distinct(elevation_scaled)
+  # predict
+  model_pred <- predict(model_ses, newdata = to_pred, type = "response", 
+                        re.form = NA)
+  pred <- bind_cols(to_pred, pred = model_pred) %>% mutate(metric = .x)
+  
+  # also generate model summary for Table 1
+  summ <- gen_mem_summ(model_ses) %>% mutate(metric = .x)
+  
+  # return both
+  list(predicted = pred,
+       summary = summ)
+  
+})
+
+# model predictions
+quad_lmm_ses <- map(quad_lmm_ses_output, "predicted") %>% 
+  list_rbind() %>% 
+  relocate(metric) %>%  # bring metric col to the start
+  mutate(metric = factor(metric,
+                         levels = c("SES.FRic", "SES.FDis", "SES.PD", "SES.MPD")))
+
+# model summary
+quad_lmm_ses_summ <- map(quad_lmm_ses_output, "summary") %>%
+  list_rbind() %>% 
+  relocate(metric) %>% 
+  # remove period from metric name
+  mutate(metric = gsub("\\.", " ", metric)) %>% 
+  pivot_wider(names_from = "metric", values_from = "value") %>% 
+  rename(`Fixed effects` = term)
+
+```
+
+### Plotting everything for Figure 3
+
+```{r}
+ggplot() +
+  # raw data points
+  geom_point(data = data_dryad_ses, col = "grey", alpha = 0.5,
+             mapping = aes(x = elevation_scaled, y = obs, group = mountain)) +
+  # individual mountain model predictions (blue line)
+  geom_line(data = quad_reg_ses, col = "#00538F",
+            mapping = aes(x = elevation_scaled, y = pred, group = mountain)) +
+  geom_hline(yintercept = 0) +
+  # overall LMM prediction across all mountains (black line)
+  geom_line(data = quad_lmm_ses, linewidth = 1.25,
+            mapping = aes(x = elevation_scaled, y = pred)) +
+  facet_wrap(~ metric, ncol = 2, scales = "free_y", strip.position = "left") +
+  labs(x = "Elevation (scaled)", y = "") +
+  theme(# match strip format in paper
+        strip.background = element_rect(colour = NA),
+        strip.placement = "outside",
+        strip.text = element_text(size = 10)) 
+```
+
+And the model summary is shown in @tbl-mem-summ:
+
+```{r tbl-mem-summ}
+#| tbl-cap: Parameter estimates (with SE) of mixed-effects models. The last row shows variances of the random effect term, Mountain.
+#| echo: false
+
+knitr::kable(quad_lmm_ses_summ)
+```
+

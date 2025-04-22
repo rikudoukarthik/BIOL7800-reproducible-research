@@ -72,7 +72,7 @@ data_dryad <- read_xlsx("data/montano_dryad_data.xlsx",
                         sheet = "FDPD_Supporting")
 
 # load functions for classification
-source("sem-project/class_functions.R")
+source("sem-project/functions.R")
 ```
 
 For the first analysis to obtain patterns of diversity metrics across elevations, I first need to fit the polynomial model for each of the four diversity metrics across all 46 mountains individually, and then extract the intercept and coefficients for each as well as predict responses across elevations.

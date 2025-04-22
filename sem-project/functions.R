@@ -1,4 +1,7 @@
+# classification of elevational trends ------------------------------------
+
 # get inflection point
+
 
 get_inflection <- function(data) {
   
@@ -70,5 +73,75 @@ class_valley_peak <- function(data) {
     )) 
   
   data %>% left_join(data_class, by = c("metric", "mountain"))
+  
+}
+
+
+# other functions ---------------------------------------------------------
+
+# function to normalise between [-1, 1]
+# https://stats.stackexchange.com/a/178629/313375
+norm_fn <- function(x) {
+  2*(x - min(x))/(max(x) - min(x)) - 1
+}
+
+# get model summary for mixed-effects models
+# - mean +- SE for coefficients
+# - random effect variances
+# - p-values for terms from LRT
+gen_mem_summ <- function(model) {
+  
+  require(broom.mixed)
+  
+  # mean +- SE of coefficients
+  coefs <- broom.mixed::tidy(model, effects = "fixed") %>% 
+    mutate(across(c("estimate", "std.error"),
+                  ~ round(., 3))) %>% 
+    reframe(term = term,
+            value = glue("{estimate} \u00B1 {std.error}"))
+  
+  # random effect variances
+  ranef_var <- broom.mixed::tidy(model, effects = "ran_pars") %>% 
+    # generates SDs, not variances, so square
+    mutate(estimate = round(estimate^2, 3)) %>% 
+    # extract only for Mountain random effect (exclude residuals)
+    filter(group == "Mountain") %>% 
+    select(group, estimate) %>% 
+    # rename to join with other table later
+    rename(value = estimate,
+           term = group) %>% 
+    mutate(value = glue("{value}"))
+  
+  # obtain p values from LRT looping through each fixed effect (LRT needs to compare two models at once)
+  fixef_terms <- setdiff(names(fixef(model)), "(Intercept)")
+  
+  lrt_results <- fixef_terms %>%
+    map_dfr(~ {
+      reduced_formula <- update.formula(formula(model), paste(". ~ . -", .x))
+      model_reduced <- update(model, reduced_formula)
+      
+      lrt <- anova(model_reduced, model)
+      
+      tibble(
+        term = .x,
+        chi_sq = lrt$Chisq[2],
+        df = lrt$Df[2],
+        p.value = lrt$`Pr(>Chisq)`[2]
+      )
+    })
+  
+  model_summ <- coefs %>% 
+    left_join(lrt_results, by = "term") %>% 
+    # use asterisks based on p value
+    mutate(ast = case_when(
+      p.value < 0.001 ~ "**",
+      p.value < 0.05 ~ "*",
+      TRUE ~ ""
+    )) %>% 
+    reframe(term = term,
+            value = glue("{value}{ast}")) %>% 
+    bind_rows(ranef_var)
+  
+  return(model_summ)
   
 }
