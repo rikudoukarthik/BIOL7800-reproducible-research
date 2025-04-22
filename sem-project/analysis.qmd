@@ -20,6 +20,8 @@ library(stringr)
 library(readxl) # file is .xlsx
 library(glue)
 library(ggplot2); theme_set(theme_classic())
+library(ggExtra) # for marginal distribution histograms (Fig 3)
+library(patchwork) # combine individual panels in Fig 3
 library(purrr)
 library(broom) # to easily access p-value from model objects
 library(broom.mixed) # for mixed models
@@ -279,23 +281,43 @@ quad_lmm_ses_summ <- map(quad_lmm_ses_output, "summary") %>%
 ### Plotting everything for Figure 3
 
 ```{r}
-ggplot() +
-  # raw data points
-  geom_point(data = data_dryad_ses, col = "grey", alpha = 0.5,
-             mapping = aes(x = elevation_scaled, y = obs, group = mountain)) +
-  # individual mountain model predictions (blue line)
-  geom_line(data = quad_reg_ses, col = "#00538F",
-            mapping = aes(x = elevation_scaled, y = pred, group = mountain)) +
-  geom_hline(yintercept = 0) +
-  # overall LMM prediction across all mountains (black line)
-  geom_line(data = quad_lmm_ses, linewidth = 1.25,
-            mapping = aes(x = elevation_scaled, y = pred)) +
-  facet_wrap(~ metric, ncol = 2, scales = "free_y", strip.position = "left") +
-  labs(x = "Elevation (scaled)", y = "") +
-  theme(# match strip format in paper
-        strip.background = element_rect(colour = NA),
-        strip.placement = "outside",
-        strip.text = element_text(size = 10)) 
+
+fig3_panel <- function(which_metric) {
+  
+  (
+    # base plot
+    ggplot() +
+      # raw data points
+      geom_point(data = data_dryad_ses %>% filter(metric == which_metric), 
+                 col = "grey", alpha = 0.5,
+                 mapping = aes(x = elevation_scaled, y = obs, group = mountain)) +
+      # individual mountain model predictions (blue line)
+      geom_line(data = quad_reg_ses %>% filter(metric == which_metric), 
+                col = "#00538F",
+                mapping = aes(x = elevation_scaled, y = pred, group = mountain)) +
+      geom_hline(yintercept = 0) +
+      # overall LMM prediction across all mountains (black line)
+      geom_line(data = quad_lmm_ses %>% filter(metric == which_metric), 
+                linewidth = 1.25,
+                mapping = aes(x = elevation_scaled, y = pred)) +
+      labs(x = "Elevation (scaled)", y = which_metric) +
+      # match strip format in paper
+      theme(axis.title.y = element_text(size = 10))
+  ) %>% 
+    # include marginal histograms
+    ggMarginal(type = "histogram", fill = "grey")
+  
+}
+
+metric_sess_form <- gsub("\\.", " ", metric_sess)
+
+(wrap_elements(fig3_panel(metric_sess_form[1])) | 
+  wrap_elements(fig3_panel(metric_sess_form[2]))) /
+  (wrap_elements(fig3_panel(metric_sess_form[3])) | 
+     wrap_elements(fig3_panel(metric_sess_form[4]))) &
+  plot_annotation(tag_levels = "a", tag_prefix = "(", tag_suffix = ")") &
+  theme(plot.tag.position = c(0.05, 0.95)) # align tags with axis labels
+
 ```
 
 And the model summary is shown in @tbl-mem-summ:
