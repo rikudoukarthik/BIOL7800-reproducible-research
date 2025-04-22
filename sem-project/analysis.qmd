@@ -212,8 +212,9 @@ quad_reg_ses <- map2(to_iter$mountain, to_iter$metric, ~ {
 }) %>% 
   list_rbind() %>% 
   relocate(metric, mountain) %>% # bring metric and mountain cols to the start
+  mutate(metric = gsub("\\.", " ", metric)) %>% # remove period from metric name
   mutate(metric = factor(metric,
-                         levels = c("SES.FRic", "SES.FDis", "SES.PD", "SES.MPD")))
+                         levels = c("SES FRic", "SES FDis", "SES PD", "SES MPD")))
 
 # summarise original data to plot raw data points
 
@@ -222,8 +223,9 @@ data_dryad_ses <- data_dryad %>%
   pivot_longer(cols = starts_with("SES"), 
                names_to = "metric", values_to = "obs") %>% 
   rename(mountain = Mountain) %>% 
+  mutate(metric = gsub("\\.", " ", metric)) %>% # remove period from metric name
   mutate(metric = factor(metric,
-                         levels = c("SES.FRic", "SES.FDis", "SES.PD", "SES.MPD")))
+                         levels = c("SES FRic", "SES FDis", "SES PD", "SES MPD")))
 ```
 
 ### Fitting mixed-effects model across all mountains
@@ -254,15 +256,21 @@ quad_lmm_ses_output <- map(metric_sess, ~ {
 quad_lmm_ses <- map(quad_lmm_ses_output, "predicted") %>% 
   list_rbind() %>% 
   relocate(metric) %>%  # bring metric col to the start
+  mutate(metric = gsub("\\.", " ", metric)) %>% # remove period from metric name
   mutate(metric = factor(metric,
-                         levels = c("SES.FRic", "SES.FDis", "SES.PD", "SES.MPD")))
+                         levels = c("SES FRic", "SES FDis", "SES PD", "SES MPD")))
 
 # model summary
 quad_lmm_ses_summ <- map(quad_lmm_ses_output, "summary") %>%
   list_rbind() %>% 
   relocate(metric) %>% 
-  # remove period from metric name
-  mutate(metric = gsub("\\.", " ", metric)) %>% 
+  # refining formatting of labels and values
+  mutate(metric = gsub("\\.", " ", metric), # remove period from metric name
+         term = str_replace(term, "elevation_scaled", "Elevation")) %>% 
+  mutate(term = if_else(str_detect(term, "\\("),
+                        str_match(term, "\\(([^()]*)\\)")[, 2],
+                        term) %>% 
+         str_replace_all("\\^2", "<sup>2</sup>")) %>% 
   pivot_wider(names_from = "metric", values_from = "value") %>% 
   rename(`Fixed effects` = term)
 
