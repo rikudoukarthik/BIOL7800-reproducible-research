@@ -127,7 +127,6 @@ quad_reg %>%
         strip.text = element_text(size = 10),
         # remove colour key
         legend.position = "none") 
-
 ```
 
 ### Classifying elevational patterns
@@ -173,7 +172,6 @@ quad_reg_class %>%
   facet_wrap(~ metric, ncol = 1) +
   scale_fill_pal +
   theme(legend.position = "none")
-
 ```
 
 ## How deterministic are these elevational patterns?
@@ -273,8 +271,9 @@ quad_lmm_ses_summ <- map(quad_lmm_ses_output, "summary") %>%
                         str_match(term, "\\(([^()]*)\\)")[, 2],
                         term) %>% 
          str_replace_all("\\^2", "<sup>2</sup>")) %>% 
+  mutate(term = str_replace(term, "Mountain", "Mountain (random effect)")) %>% 
   pivot_wider(names_from = "metric", values_from = "value") %>% 
-  rename(`Fixed effects` = term)
+  rename(Terms = term)
 
 ```
 
@@ -329,3 +328,62 @@ And the model summary is shown in @tbl-mem-summ:
 knitr::kable(quad_lmm_ses_summ)
 ```
 
+## Is our classification of elevational trends correct?
+
+Double-checking our classification of elevational trends to see if they make sense. If not, that could explain the discordance with original results.
+
+```{r}
+# plot the trends of different trend types for each metric separately
+quad_reg_class %>% 
+  mutate(trend = factor(trend, 
+                        levels = c("Increasing", "Decreasing", "Mid Peak", "Mid Valley",
+                                   "Low Peak", "Low Valley", "High Peak", "High Valley", "NS"))) %>% 
+  right_join(quad_reg, by = c("metric", "mountain")) %>% 
+  filter(metric == "FRic") %>% 
+  ggplot(aes(x = elevation, y = pred, col = mountain)) +
+  geom_line() +
+  facet_wrap(~ trend, ncol = 2, scales = "free_y", strip.position = "left") + 
+  labs(x = "Elevation", y = "FRic") +
+  # scale_col_pal + # only makes sense to colour scheme after classifying into 8 categs
+  theme(panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
+        # match strip format in paper
+        strip.background = element_rect(colour = NA),
+        strip.placement = "outside",
+        strip.text = element_text(size = 10),
+        # remove colour key
+        legend.position = "none") 
+
+```
+
+This figure only shows the trends for the FRic metric. Aside from a handful of lines that look like they might belong in a different category, the overall classification seems to have worked out rather well! 
+
+How do they look when we use the scaled elevation values?
+
+```{r}
+quad_reg_class %>% 
+  mutate(trend = factor(trend, 
+                        levels = c("Increasing", "Decreasing", "Mid Peak", "Mid Valley",
+                                   "Low Peak", "Low Valley", "High Peak", "High Valley", "NS"))) %>% 
+  right_join(quad_reg, by = c("metric", "mountain")) %>% 
+  select(metric, mountain, pred, elevation, trend) %>% 
+  left_join(data_dryad %>% distinct(Mountain, elevation, elevation_scaled),
+            by = c("mountain" = "Mountain", "elevation")) %>% 
+  filter(metric == "FRic") %>% 
+  ggplot(aes(x = elevation_scaled, y = pred, group = mountain)) +
+  geom_line(col = "#00538F", alpha = 0.5) +
+  facet_wrap(~ trend, ncol = 2, strip.position = "left") + 
+  labs(x = "Elevation", y = "FRic") +
+  theme(panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
+        # match strip format in paper
+        strip.background = element_rect(colour = NA),
+        strip.placement = "outside",
+        strip.text = element_text(size = 10),
+        # remove colour key
+        legend.position = "none") 
+```
+
+From this, it seems that the only discrepancies are in the peaks and valleys categories. For instance, for FRic, my method has more Mid Peaks while theirs has more Low Peaks, while there is also one misclassified Decreasing & High Valley. This probably has to do with the fact that the authors used a stringent criterion:
+
+> Patterns were  classified as [...] if there is a peak/valley of diversity metrics that occurs in more than three consecutive  elevational bins towards low or high elevations, respectively.
+
+This criterion is rather ambiguous, and its implementation in my programmatic classification is not feasible. Since the majority of trends still seem to have been classified the same in both of our methods, and since the authors do not use the categories themselves as variables in any models, I am satisfied leaving my classification as is. 
