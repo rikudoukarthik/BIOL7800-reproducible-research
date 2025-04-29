@@ -1,5 +1,5 @@
 ---
-title: "Reproducing Montano-Centellas et al. (2020)"
+title: "Reproducing Montaño-Centellas et al. (2020)"
 author: Karthik Thrikkadeeri
 toc: true
 number-sections: false

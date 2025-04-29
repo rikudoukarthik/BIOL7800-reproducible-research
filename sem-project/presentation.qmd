@@ -1,0 +1,562 @@
+---
+title: "Reproducing Montaño-Centellas et al., 2020"
+subtitle: "Semester Project, BIOL 7800 Reproducible Research"
+date: "2025-04-29"
+author:
+  - name: Karthik Thrikkadeeri
+    orcid: 0000-0003-2863-5879
+    affiliations: Montaño Lab, Louisiana State University
+# embed-resources: false
+format: clean-revealjs
+highlight-style: tango
+execute:
+  warning: false
+  echo: true
+editor_options: 
+  chunk_output_type: console
+---
+
+# Original study {background-color="#40666e"}
+
+<!-- quarto install extension grantmcdermott/quarto-revealjs-clean -->
+<!-- for more info on the clean theme: -->
+<!-- https://grantmcdermott.com/quarto-revealjs-clean-demo/template.html#/title-slide -->
+<!-- clean theme demo qmd: https://github.com/grantmcdermott/quarto-revealjs-clean-demo/blob/main/template.qmd -->
+
+## 
+
+[![](montano2020.png)](https://onlinelibrary.wiley.com/doi/10.1111/geb.13021)
+
+::: {.incremental}
+- *Functional & phylogenetic* vs taxonomic
+- *General* global pattern of diversity with elevation
+:::
+
+## 
+
+- Bird community data 
+- Resolution: 100 m elevational bands
+
+. . .
+
+![Locations of the 46 elevational gradients used in the study.](fig1.png){#fig-1 width=90%}
+
+##
+
+::::: {.columns}
+
+:::: {.column width="50%"}
+::: {.incremental}
+1. Four diversity metrics 
+1. Quadratic regression with elevation
+1. Classify curve shapes
+:::
+::::
+
+:::: {.column width="30%"}
+![](fig2a.png)
+::::
+
+:::::
+
+## 
+
+:::: {.columns}
+
+::: {.column width="50%"}
+1. Four diversity metrics 
+1. Quadratic regression with elevation
+1. Classify curve shapes
+1. Consistency across mountains & metrics
+:::
+
+::: {.column width="50%"}
+![](fig2b.png)
+:::
+
+::::
+
+## 1. Elevational patterns of diversity
+
+![Patterns of bird functional and phylogenetic diversity along elevational gradients.](fig2.png){#fig-2}
+
+## 2. Deterministic strength
+
+## 2. Deterministic strength
+
+![Global trends of standardised effect sizes of diversity metrics against standardised elevation, as predicted from quadratic regressions and a global quadratic mixed-effects model.](fig3.png){#fig-3}
+
+## 3. Latitudinal effects
+
+## 3. Latitudinal effects
+
+![Effect of latitude on deterministic strength of elevational trends in diversity.](fig4.png){#fig-4}
+
+# My process {background-color="#40666e"}
+
+```{r}
+#| echo: false
+
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(readxl) # file is .xlsx
+library(glue)
+library(ggplot2); theme_set(theme_classic())
+library(ggExtra) # for marginal distribution histograms (Fig 3)
+library(plotly) # interactive troubleshooting
+library(patchwork) # combine individual panels in Fig 3
+library(purrr)
+library(broom) # to easily access p-value from model objects
+library(broom.mixed) # for mixed models
+library(lme4)
+
+# colour palette to match that used in paper
+scale_col_pal <- scale_color_brewer(palette = "Dark2", na.value = "grey50")
+scale_fill_pal <- scale_fill_brewer(palette = "Dark2", na.value = "grey50")
+
+
+# load functions for classification
+source("sem-project/functions.R")
+
+data_dryad <- read_xlsx("data/montano_dryad_data.xlsx",
+                        sheet = "FDPD_Supporting") %>% 
+  # normalise elevations per mountain
+  group_by(Mountain) %>% 
+  mutate(elevation_norm = norm_fn(elevation)) %>% 
+  # just realised that's not what they actually did; they just scaled and centred on 0
+  mutate(elevation_scaled = scale(elevation)[,1]) %>% 
+  ungroup()
+```
+
+## Starting point
+
+. . .
+
+No code available.
+
+. . .
+
+No raw data available.
+
+. . .
+
+Processed dataset archived [on Dryad](https://doi.org/10.5061/dryad.tqjq2bvtc).
+
+. . .
+
+```{r}
+read_xlsx("data/montano_dryad_data.xlsx", # single Excel file
+          sheet = "FDPD_Supporting") %>% # sheet name
+  slice_sample(n = 6)
+```
+
+## Starting point
+
+No latitude information. 
+
+Cannot test latitudinal effects (@fig-4).
+
+Can reproduce first two analyses (@fig-2, @fig-3).
+
+# Reproduction {background-color="#40666e"}
+
+# 1. Elevational patterns
+
+## Fitting models
+
+```{r}
+#| code-line-numbers: "|6-8|10|12-14|"
+
+# iterate over each mountain in the dataset:
+# fit LM of each metric against linear and second-order polynomial terms of Elevation
+# extract intercept and coefficients for both Elevation terms
+# aggregate all these values over all mountains
+
+list_mount <- unique(data_dryad$Mountain)
+metric_cols <- c("FRic", "FDis", "PD", "MPD")
+to_iter <- expand.grid(mountain = list_mount, metric = metric_cols)
+
+quad_reg <- purrr::map2(to_iter$mountain, to_iter$metric, ~ {
+  
+  data_mount <- data_dryad %>% filter(Mountain == .x)
+  model_formula <- as.formula(glue("{.y} ~ elevation + I(elevation^2)"))
+  model_mount <- lm(model_formula, data_mount)
+  
+  # predict only for elevations present in each mountain
+  to_pred <- data_mount %>% distinct(Mountain, elevation)
+  # predict
+  model_pred <- predict(model_mount, newdata = to_pred, type = "response")
+  pred <- bind_cols(to_pred, pred = model_pred)
+  
+  # store p-value of model fit
+  p <- broom::glance(model_mount) %>% pull(p.value)
+
+  # bind all outputs together
+  t(model_mount$coefficients) %>% 
+    as_tibble() %>% 
+    magrittr::set_colnames(c("intercept", "coef_linear", "coef_poly")) %>% 
+    bind_cols(tibble(mountain = .x, metric = .y, pval = p)) %>% 
+    left_join(pred, by = c("mountain" = "Mountain"))
+  
+}) %>% 
+  list_rbind() %>% 
+  relocate(metric, mountain) # bring metric and mountain cols to the start
+
+```
+
+## Plotting predicted patterns
+
+```{r}
+#| fig-asp: 1.25
+#| code-fold: true
+#| output-location: column
+#| code-overflow: wrap
+
+quad_reg %>% 
+  ggplot(aes(x = elevation, y = pred, col = mountain)) +
+  geom_line() +
+  facet_wrap(~ metric, ncol = 1, scales = "free_y", strip.position = "left") + 
+  labs(x = "Elevation", y = "") +
+  # scale_col_pal + # only makes sense to colour scheme after classifying into 8 categs
+  theme(panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
+        # match strip format in paper
+        strip.background = element_rect(colour = NA),
+        strip.placement = "outside",
+        strip.text = element_text(size = 10),
+        # remove colour key
+        legend.position = "none") 
+```
+
+## Classifying elevational patterns
+
+```{r}
+#| fig-asp: 1.5
+#| code-line-numbers: "|3-5|7-22"
+
+# classify elevational trends
+quad_reg_class <- quad_reg %>% 
+  get_inflection() %>% 
+  get_elev_cats() %>% # low, mid, high
+  class_valley_peak() %>% 
+  group_by(metric, mountain) %>% 
+  reframe(trend = case_when(
+    min(pval) > 0.1 ~ "NS",
+    
+    all(inflection == FALSE) & all(pred_diff >= 0) ~ "Increasing",
+    all(inflection == FALSE) & all(pred_diff <= 0) ~ "Decreasing",
+    
+    all(valleypeak == "valley") & all(!(inflection == TRUE & elev_cat != "LOW")) ~ "Low Valley",
+    all(valleypeak == "valley") & all(!(inflection == TRUE & elev_cat != "HIGH")) ~ "High Valley",
+    all(valleypeak == "valley") & all(!(inflection == TRUE & elev_cat != "MID")) ~ "Mid Valley",
+    
+    all(valleypeak == "peak") & all(!(inflection == TRUE & elev_cat != "LOW")) ~ "Low Peak",
+    all(valleypeak == "peak") & all(!(inflection == TRUE & elev_cat != "HIGH")) ~ "High Peak",
+    all(valleypeak == "peak") & all(!(inflection == TRUE & elev_cat != "MID")) ~ "Mid Peak",
+    
+    TRUE ~ NA
+  )) 
+```
+
+## 
+
+```{r}
+#| fig-asp: 1.25
+#| code-fold: true
+#| output-location: column
+
+# plot frequency bar graph of different trend types
+quad_reg_class %>% 
+  mutate(trend = factor(trend, 
+                         levels = c("Increasing", "Decreasing", "Mid Peak", "Mid Valley",
+                                    "Low Peak", "Low Valley", "High Peak", "High Valley", "NS"))) %>% 
+  group_by(metric) %>% 
+  count(trend) %>% 
+  ggplot() +
+  geom_col(aes(x = trend, y = n, fill = trend)) +
+  facet_wrap(~ metric, ncol = 1, strip.position = "left") +
+  labs(x = "Trend type", y = "") +
+  scale_fill_pal +
+  theme(legend.position = "none",
+        # match strip format in paper
+        strip.background = element_rect(colour = NA),
+        strip.placement = "outside",
+        strip.text = element_text(size = 10))
+```
+
+# 2. Deterministic strength
+
+## Fitting models
+
+Individual mountain models
+
+```{r}
+#| code-fold: true
+
+# iterate over each mountain in the dataset:
+# fit LM of each metric against linear and second-order polynomial terms of scaled elevation
+# extract model predictions for each mountain
+
+metric_sess <- glue("SES.{metric_cols}")
+to_iter <- expand.grid(mountain = list_mount, metric = metric_sess)
+
+quad_reg_ses <- map2(to_iter$mountain, to_iter$metric, ~ {
+  
+  data_mount <- data_dryad %>% filter(Mountain == .x)
+  model_formula <- as.formula(glue("{.y} ~ elevation_scaled + I(elevation_scaled^2)"))
+  model_mount <- lm(model_formula, data_mount)
+  
+  # predict only for elevations present in each mountain
+  to_pred <- data_mount %>% distinct(Mountain, elevation_scaled)
+  # predict
+  model_pred <- predict(model_mount, newdata = to_pred, type = "response")
+  pred <- bind_cols(to_pred, pred = model_pred)
+  
+  tibble(mountain = .x, metric = .y) %>% 
+    left_join(pred, by = c("mountain" = "Mountain"))
+  
+}) %>% 
+  list_rbind() %>% 
+  relocate(metric, mountain) %>% # bring metric and mountain cols to the start
+  mutate(metric = gsub("\\.", " ", metric)) %>% # remove period from metric name
+  mutate(metric = factor(metric,
+                         levels = c("SES FRic", "SES FDis", "SES PD", "SES MPD")))
+
+# summarise original data to plot raw data points
+
+data_dryad_ses <- data_dryad %>% 
+  select(Mountain, elevation_scaled, starts_with("SES")) %>% 
+  pivot_longer(cols = starts_with("SES"), 
+               names_to = "metric", values_to = "obs") %>% 
+  rename(mountain = Mountain) %>% 
+  mutate(metric = gsub("\\.", " ", metric)) %>% # remove period from metric name
+  mutate(metric = factor(metric,
+                         levels = c("SES FRic", "SES FDis", "SES PD", "SES MPD")))
+```
+
+. . .
+
+Global mixed-effects model
+
+```{r}
+#| code-fold: true
+
+quad_lmm_ses_output <- map(metric_sess, ~ {
+  
+  model_formula <- as.formula(glue("{.x} ~ elevation_scaled + I(elevation_scaled^2) + (1 | Mountain)"))
+  model_ses <- lmer(model_formula, data_dryad, REML = FALSE) # because we use Likelihood Ratio Test
+  
+  # predict only for elevations present in each mountain
+  to_pred <- data_dryad %>% distinct(elevation_scaled)
+  # predict
+  model_pred <- predict(model_ses, newdata = to_pred, type = "response", 
+                        re.form = NA)
+  pred <- bind_cols(to_pred, pred = model_pred) %>% mutate(metric = .x)
+  
+  # also generate model summary for Table 1
+  summ <- gen_mem_summ(model_ses) %>% mutate(metric = .x)
+  
+  # return both
+  list(predicted = pred,
+       summary = summ)
+  
+})
+
+# model predictions
+quad_lmm_ses <- map(quad_lmm_ses_output, "predicted") %>% 
+  list_rbind() %>% 
+  relocate(metric) %>%  # bring metric col to the start
+  mutate(metric = gsub("\\.", " ", metric)) %>% # remove period from metric name
+  mutate(metric = factor(metric,
+                         levels = c("SES FRic", "SES FDis", "SES PD", "SES MPD")))
+
+# model summary
+quad_lmm_ses_summ <- map(quad_lmm_ses_output, "summary") %>%
+  list_rbind() %>% 
+  relocate(metric) %>% 
+  # refining formatting of labels and values
+  mutate(metric = gsub("\\.", " ", metric), # remove period from metric name
+         term = str_replace(term, "elevation_scaled", "Elevation")) %>% 
+  mutate(term = if_else(str_detect(term, "\\("),
+                        str_match(term, "\\(([^()]*)\\)")[, 2],
+                        term) %>% 
+         str_replace_all("\\^2", "<sup>2</sup>")) %>% 
+  mutate(term = str_replace(term, "Mountain", "Mountain (random effect)")) %>% 
+  pivot_wider(names_from = "metric", values_from = "value") %>% 
+  rename(Terms = term)
+
+```
+
+. . .
+
+Lots of models!
+
+```{r}
+#| code-overflow: wrap
+ 
+# (elev. patt. for each mountain) + ((det. strength for each mountain) + (global det. strength))
+how_many_models <- (dim(to_iter)[1]) + (dim(to_iter)[1] + length(metric_sess))
+how_many_models
+```
+
+## 
+
+```{r}
+#| code-line-numbers: "1,26|4-21|23,24|30-35"
+#| output: false
+
+fig3_panel <- function(which_metric) {
+  
+  (
+    # base plot
+    ggplot() +
+      # raw data points
+      geom_point(data = data_dryad_ses %>% filter(metric == which_metric), 
+                 col = "grey", alpha = 0.5,
+                 mapping = aes(x = elevation_scaled, y = obs, group = mountain)) +
+      # individual mountain model predictions (blue line)
+      geom_line(data = quad_reg_ses %>% filter(metric == which_metric), 
+                col = "#00538F",
+                mapping = aes(x = elevation_scaled, y = pred, group = mountain)) +
+      geom_hline(yintercept = 0) +
+      # overall LMM prediction across all mountains (black line)
+      geom_line(data = quad_lmm_ses %>% filter(metric == which_metric), 
+                linewidth = 1.25,
+                mapping = aes(x = elevation_scaled, y = pred)) +
+      labs(x = "Elevation (scaled)", y = which_metric) +
+      # match strip format in paper
+      theme(axis.title.y = element_text(size = 10))
+  ) %>% 
+    # include marginal histograms
+    ggExtra::ggMarginal(type = "histogram", fill = "grey")
+  
+}
+
+metric_sess_form <- gsub("\\.", " ", metric_sess)
+
+(wrap_elements(fig3_panel(metric_sess_form[1])) | 
+  wrap_elements(fig3_panel(metric_sess_form[2]))) /
+  (wrap_elements(fig3_panel(metric_sess_form[3])) | 
+     wrap_elements(fig3_panel(metric_sess_form[4]))) &
+  plot_annotation(tag_levels = "a", tag_prefix = "(", tag_suffix = ")") &
+  theme(plot.tag.position = c(0.05, 0.95)) # align tags with axis labels
+
+```
+
+## Plotting everything
+
+```{r}
+#| echo: false
+#| fig-asp: 1
+#| fig-align: center
+
+(wrap_elements(fig3_panel(metric_sess_form[1])) | 
+  wrap_elements(fig3_panel(metric_sess_form[2]))) /
+  (wrap_elements(fig3_panel(metric_sess_form[3])) | 
+     wrap_elements(fig3_panel(metric_sess_form[4]))) &
+  plot_annotation(tag_levels = "a", tag_prefix = "(", tag_suffix = ")") &
+  theme(plot.tag.position = c(0.05, 0.95)) # align tags with axis labels
+
+```
+
+## 
+
+```{r tbl-mem-summ}
+#| tbl-cap: Parameter estimates (with SE) of mixed-effects models. The last row shows variances of the random effect term, Mountain.
+
+knitr::kable(quad_lmm_ses_summ)
+```
+
+# Conclusion {background-color="#40666e"}
+
+## 
+
+&check; Elevational patterns of diversity 
+
+&check; Deterministic strength 
+
+&cross; Latitudinal effects 
+
+![](https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExc3VwcGsya3dma3hvcjN0NW9kYXFqOXFnbWhzMDdqN2R2MXZ6cW9hdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/llfVoXzlEppScDN9V5/giphy.gif){fig-align="right"}
+
+## Hurdles & learnings
+
+::: {.incremental}
+
+- Reproduction with gaps
+
+\n\n
+
+- Lack of information on classification of trends
+- Manual vs programmatic discrepancy
+- "normalized" vs "scaled" vs "scaled and centred"
+
+\n\n
+
+- Broader issues
+    - Journal restrictions (even supp.)
+    - Decoupling of code & outputs from text
+    - Pressure to release "final product"
+
+\n\n
+
+- Think of the reproducibility spectrum!
+
+:::
+
+## What went smooth?
+
+- Having no (bad) code!
+- `r how_many_models` individual models but `purrr`ed worries away!
+
+![](https://purrr.tidyverse.org/logo.png){fig-align="right" height=40%}
+
+## Favourite new tool
+
+![](https://store-images.s-microsoft.com/image/apps.36868.bfb0e2ee-be9e-4c73-807f-e0a7b805b1be.712aff5d-5800-47e0-97be-58d17ada3fb8.a46845e6-ce94-44cf-892b-54637c6fcf06){fig-align="center" width=4%}
+
+```{r}
+#| code-line-numbers: "18"
+#| output: false
+
+plotly_test <- (quad_reg_class %>% 
+  mutate(trend = factor(
+    trend, 
+    levels = c("Increasing", "Decreasing", "Mid Peak", "Mid Valley",
+               "Low Peak", "Low Valley", "High Peak", "High Valley", "NS")
+  )) %>% 
+  group_by(metric) %>% 
+  count(trend) %>% 
+  ggplot() +
+  geom_col(aes(x = trend, y = n, fill = trend)) +
+  facet_wrap(~ metric, ncol = 1, strip.position = "left") +
+  labs(x = "Trend type", y = "") +
+  scale_fill_pal +
+  theme(legend.position = "none",
+        strip.background = element_rect(colour = NA),
+        strip.placement = "outside",
+        strip.text = element_text(size = 10))) %>% 
+  ggplotly()
+
+```
+
+## 
+
+:::: {.columns}
+
+::: {.column width=60%}
+```{r}
+#| echo: false
+#| height: 100%
+
+plotly_test
+```
+:::
+
+::: {.column width=40%}
+![](fig2b.png){height=100%}
+:::
+
+::::
+
+# Thank you! {background-color="#40666e"}
