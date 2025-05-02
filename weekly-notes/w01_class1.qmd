@@ -1,0 +1,51 @@
+---
+title: "Class 1"
+format: html
+---
+
+## Steps of the research process
+
+- Observing patterns (affected by motivation like system interested in)
+- Ideation & formulation of questions (based on existing information and data)
+- Hypotheses and predictions
+- Designing study/experiment
+- Procure funding!
+- Collecting data 
+- Cleaning and wrangling data into appropriate form
+- Analysing data
+- Interpreting results
+- Synthesising inferences 
+- Communicating to wider audience
+- Feed back into first
+
+This cycle needs to be robust especially if the last step needs to feed back into the first
+
+## Background
+
+- No real canon for Reproducible Research
+- Jon Claerbout 1998 “The idea of reproducible research”
+
+1. Reinhart & Rogoff 2010: “Growth in a time of debt”
+	- Suggested that if country has high debt relative to GDP, GDP will decrease --> so reduce debt
+	- Some students later tried to reproduce and were unable to replicate
+	- Corresponded with original authors who provided spreadsheet; concluded about three main concerns with dataset and analytical choices:
+		- Accident
+		- Deliberate choice not communicated
+		- Deliberate choice communicated, but analytically weird: Unconventional weighting of summary stats
+2. 2006 Duke Uni
+	- suggesting genetic basis for chemotherapy response (efficacy)
+	- many data/spreadsheet issues, without which correlations vanished
+3. 2019 Pruitt scandal
+
+## Why bother
+
+- Good science is done in community and in relationship with other work
+- Transparency and reproducibility --> research more meaningful and robust
+- Scientific process supposed to be “self-correcting”
+
+**What is open science and how is it related to reproducibility?**
+
+- Could be defined by practices (actions), or principles
+- I think I relate more with Orion Open Science; define it as a *movement*, which implies that the standard way currently is not best
+- NASA defines it as an ethos
+- Can also be understood as an *idea*
