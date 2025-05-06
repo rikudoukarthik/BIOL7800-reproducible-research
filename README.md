@@ -1,6 +1,6 @@
 # Reproducible research (and open science) in ecology and evolution
 
-Repo for the Spring 2025 edition of Reproducible Research in Ecology and Evolution by Gaurav Kandlikar at LSU.
+Repo for the Spring 2025 edition of Reproducible Research in Ecology and Evolution by Gaurav Kandlikar at LSU. May 2025 archive: [![DOI](https://zenodo.org/badge/917253055.svg)](https://doi.org/10.5281/zenodo.15353476)
 
 *From the [official course page](https://rr.gklab.org/#course-objectives):*
 
