@@ -1,8 +1,6 @@
 # classification of elevational trends ------------------------------------
 
 # get inflection point
-
-
 get_inflection <- function(data) {
   
   data %>% 
@@ -32,7 +30,6 @@ get_inflection <- function(data) {
 
 
 # classify elevational bands into L, M, H
-
 get_elev_cats <- function(data) {
   
   data_cats <- data %>% 
@@ -60,7 +57,6 @@ get_elev_cats <- function(data) {
 
 
 # classify trends as valley or peak
-
 class_valley_peak <- function(data) {
   
   data_class <- data %>% 
@@ -79,11 +75,13 @@ class_valley_peak <- function(data) {
 
 # other functions ---------------------------------------------------------
 
-# function to normalise between [-1, 1]
-# https://stats.stackexchange.com/a/178629/313375
+# function to normalise between [-1, 1] (https://stats.stackexchange.com/a/178629/313375)
 norm_fn <- function(x) {
+  
   2*(x - min(x))/(max(x) - min(x)) - 1
+  
 }
+
 
 # get model summary for mixed-effects models
 # - mean +- SE for coefficients
@@ -145,3 +143,4 @@ gen_mem_summ <- function(model) {
   return(model_summ)
   
 }
+

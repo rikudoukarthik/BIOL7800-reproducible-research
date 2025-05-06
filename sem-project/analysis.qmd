@@ -32,7 +32,7 @@ scale_col_pal <- scale_color_brewer(palette = "Dark2", na.value = "grey50")
 scale_fill_pal <- scale_fill_brewer(palette = "Dark2", na.value = "grey50")
 
 
-# load functions for classification
+# load helper functions
 source("sem-project/functions.R")
 
 data_dryad <- read_xlsx("data/montano_dryad_data.xlsx",

@@ -1,0 +1,373 @@
+---
+title: "BIOL 7800 Semester Project: Final Report"
+subtitle: "Reproducing Montaño-Centellas et al., 2020"
+author: Karthik Thrikkadeeri
+date: 2025-05-06
+toc: false
+number-sections: false
+embed-resources: true
+bibliography: ../sem-project/final-report-ref.bib
+csl: ../the-american-naturalist.csl
+theme: sandstone
+format: 
+  pdf:
+    include-in-header: 
+    # https://github.com/quarto-dev/quarto-cli/discussions/6772
+      text: '\usepackage{lineno}'
+    include-before-body:
+      text: |
+        \linenumbers 
+        <!-- default font is "tiny" -->
+        \renewcommand\linenumberfont{\normalfont\small\sffamily} 
+    sansfont: "Petrona"
+    linestretch: 2
+execute:
+  warning: false
+editor_options: 
+  chunk_output_type: console
+---
+
+# Background
+
+Ecologists have long been fascinated by patterns of biodiversity along environmental gradients and the mechanisms driving these patterns [@ricklefs2004]. Elevational gradients are interesting from this perspective, due to their rapid turnover of environmental conditions creating complex sets of habitats and climate zones [@graham2014]. As for how communities of organisms are assembled with particular species, the two main factors generally believed to play a role are environmental filtering and biotic interactions [@cavender2009]. 
+
+These two scenarios are typically reflected in under- or overdispersion respectively in the functional and phylogenetic structure of communities---in other words, species assemblages are more clustered or dispersed in their function or phylogeny than expected by chance [@lebrija2010; @mayfield2010]. For instance, communities under strong environmental filtering pressure due to factors such as habitat quality and structure, resource availability, or abiotic stresses like temperature typically contain species with high functional similarity [@presley2018]. Similarly, communities characterised by strong interspecific competition, usually resulting in competitive exclusion or character displacement, likely show overdispersion in species function [@macarthur1967].
+
+As a result, considering the functional and phylogenetic structure of communities can provide insight into the relative importance of these drivers of community assembly [@cavender2009; @webb2002]. However, these aspects of diversity have historically received much less attention than taxonomic diversity. Research on elevational patterns of taxonomic diversity have found two main patterns [though these can be subdivided into finer patterns, @mccain2009]: species richness either decreases with elevation [e.g., @jankowski2013; @sam2019] or peaks at mid-elevations [e.g., @toko2023]. 
+
+The limited number of studies focusing on functional and phylogenetic diversity have found decreasing trends [e.g., @hanz2019], with overdispersion at lower elevations and underdispersion at higher elevations [@hanz2019]. However, most of these studies have dealt with single mountains, leaving much still unknown about the generality of these patterns and their deterministic strengths. This is exactly what @montano2020 investigated, by analysing a large dataset of resident birds of 46 mountains across the globe.
+
+# Process
+
+The process of obtaining the data for this (re)analysis was challenging because the authors have not provided the raw datasets, but also simple at the same time because the processed dataset has been made available on [Dryad](https://doi.org/10.5061/dryad.tqjq2bvtc). I simply downloaded the single data file and stored it in my repository at `data/montano_dryad_data.xlsx`. This file contains functional and phylogenetic richness and diversity metrics calculated at the level of 100 m elevation bands across 46 mountains of the world, along with their SESs and corresponding p-values. 
+
+Of the three main results from the paper I wanted to reproduce, I was not be able to reproduce the final analysis of the effect of latitude on patterns of elevational change, because latitude information is missing from the archived dataset^[Table S1.1 in the online supplementary material [PDF](https://onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1111%2Fgeb.13021&file=geb13021-sup-0001-Supinfo.pdf) does contain absolute latitude and longitude, but due to time constraints I was unable to import this data and run the final analysis.]. 
+
+The first analysis lacked clarity on the process after running quadratic regressions for the functional and phylogenetic diversity metrics against elevation. The authors mention "classifying" each elevational pattern using slope and intercept values from the model results, without mentioning specific details, and they do not provide code for this either, which suggests that they manually classified the trends. Instead, I tried to achieve the same results with a programmatic approach, using a series of hierarchical `case_when()` conditions. For the second analysis, since we do not have access to the original trait and phylogeny data, I was limited to using SES values that the authors have already calculated for each metric (with the assumption of reproducibility and absence of errors in the intermediate steps).
+
+```{r, include=FALSE}
+# obtaining package citations (to copy to .bib)
+
+citation("metafor")
+citation("lme4")
+citation("stats")
+
+citation("dplyr")
+citation("readxl")
+citation("glue")
+citation("ggplot2")
+citation("purrr")
+
+citation("tidyr")
+citation("stringr")
+citation("ggExtra")
+citation("patchwork")
+# citation("broom")
+citation("broom.mixed")
+```
+
+I used the following packages in my reproduction process: `dplyr` [@wickham2023a], `tidyr` [@wickham2024], `purrr` [@wickham2023c], `readxl` [@wickham2023b], `glue` [@hester2024], `stringr` [@wickham2023d], `stats` [@rcoreteam2025], `lme4` [@bates2015], `broom` [@robinson2024], `broom.mixed` [@bolker2024],  `ggplot2` [@wickham2016], `ggExtra` [@attali2023], and `patchwork` [@pedersen2024]. The `metafor` package [@viechtbauer2010]---which the authors used to run hierarchical multivariate meta-regression to assess latitudinal effects on deterministic signal---was new to me, although I ended up not performing this analysis.
+
+# Reproducible research code
+
+The below code sets up everything required to run the analyses:
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(readxl) # file is .xlsx
+library(glue)
+library(ggplot2); theme_set(theme_classic())
+library(ggExtra) # for marginal distribution histograms (Fig 3)
+library(patchwork) # combine individual panels in Fig 3
+library(purrr)
+library(broom) # to easily access p-value from model objects
+library(broom.mixed) # for mixed models
+library(lme4)
+
+# colour palette to match that used in paper
+scale_col_pal <- scale_color_brewer(palette = "Dark2", na.value = "grey50")
+scale_fill_pal <- scale_fill_brewer(palette = "Dark2", na.value = "grey50")
+
+
+# load helper functions
+source("sem-project/functions.R")
+
+data_dryad <- read_xlsx("data/montano_dryad_data.xlsx",
+                        sheet = "FDPD_Supporting") %>% 
+  # normalise elevations per mountain
+  group_by(Mountain) %>% 
+  mutate(elevation_norm = norm_fn(elevation)) %>% 
+  # just realised that's not what they actually did; they just scaled and centred on 0
+  mutate(elevation_scaled = scale(elevation)[,1]) %>% 
+  ungroup()
+```
+
+The `functions.R` file being sourced in contains several helper functions, but because it contains `r length(readLines("sem-project/functions.R"))` lines of code, it is not reprinted here (see [source](https://gitlab.com/gklab/rr-2025/BIOL7800-reproducible-research/-/blob/main/sem-project/functions.R) instead).
+
+First, to obtain patterns of diversity metrics across elevations, I fit the polynomial model for each of the four diversity metrics across all 46 mountains individually, and then extract the intercept and coefficients for each and also predict responses across elevations.
+
+```{r}
+# iterate over each mountain in the dataset:
+# fit LM of each metric against linear and second-order polynomial terms of Elevation
+# extract intercept and coefficients for both Elevation terms
+# aggregate all these values over all mountains
+
+list_mount <- unique(data_dryad$Mountain)
+metric_cols <- c("FRic", "FDis", "PD", "MPD")
+to_iter <- expand.grid(mountain = list_mount, metric = metric_cols)
+
+quad_reg <- map2(to_iter$mountain, to_iter$metric, ~ {
+  
+  data_mount <- data_dryad %>% filter(Mountain == .x)
+  model_formula <- as.formula(glue("{.y} ~ elevation + I(elevation^2)"))
+  model_mount <- lm(model_formula, data_mount)
+  
+  # predict only for elevations present in each mountain
+  to_pred <- data_mount %>% distinct(Mountain, elevation)
+  # predict
+  model_pred <- predict(model_mount, newdata = to_pred, type = "response")
+  pred <- bind_cols(to_pred, pred = model_pred)
+  
+  # store p-value of model fit
+  p <- broom::glance(model_mount) %>% pull(p.value)
+
+  t(model_mount$coefficients) %>% 
+    as_tibble() %>% 
+    magrittr::set_colnames(c("intercept", "coef_linear", "coef_poly")) %>% 
+    bind_cols(tibble(mountain = .x, metric = .y, pval = p)) %>% 
+    left_join(pred, by = c("mountain" = "Mountain"))
+  
+}) %>% 
+  list_rbind() %>% 
+  relocate(metric, mountain) # bring metric and mountain cols to the start
+```
+
+I then plot the predicted values before classifying the trends into the nine categories the authors used: Increasing, Decreasing, Mid Peak, Mid Valley, Low Plateau (Peak), High Plateau (Peak), Low Valley, High Valley, and NS for non-significant. 
+
+```{r}
+#| fig-asp: 1.5
+
+quad_reg %>% 
+  ggplot(aes(x = elevation, y = pred, col = mountain)) +
+  geom_line() +
+  facet_wrap(~ metric, ncol = 1, scales = "free_y", strip.position = "left") + 
+  labs(x = "Elevation", y = "") +
+  # scale_col_pal + # only makes sense to colour scheme after classifying into 8 categs
+  theme(panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
+        # match strip format in paper
+        strip.background = element_rect(colour = NA),
+        strip.placement = "outside",
+        strip.text = element_text(size = 10),
+        # remove colour key
+        legend.position = "none") 
+```
+
+```{r}
+#| fig-asp: 1.5
+
+# classify elevational trends
+
+quad_reg_class <- quad_reg %>% 
+  get_inflection() %>% 
+  get_elev_cats() %>% 
+  class_valley_peak() %>% 
+  group_by(metric, mountain) %>% 
+  reframe(trend = case_when(
+    min(pval) > 0.1 ~ "NS",
+    
+    all(inflection == FALSE) & all(pred_diff >= 0) ~ "Increasing",
+    all(inflection == FALSE) & all(pred_diff <= 0) ~ "Decreasing",
+    
+    all(valleypeak == "valley") & 
+      all(!(inflection == TRUE & elev_cat != "LOW")) ~ "Low Valley",
+    all(valleypeak == "valley") & 
+      all(!(inflection == TRUE & elev_cat != "HIGH")) ~ "High Valley",
+    all(valleypeak == "valley") & 
+      all(!(inflection == TRUE & elev_cat != "MID")) ~ "Mid Valley",
+    
+    all(valleypeak == "peak") & 
+      all(!(inflection == TRUE & elev_cat != "LOW")) ~ "Low Peak",
+    all(valleypeak == "peak") & 
+      all(!(inflection == TRUE & elev_cat != "HIGH")) ~ "High Peak",
+    all(valleypeak == "peak") & 
+      all(!(inflection == TRUE & elev_cat != "MID")) ~ "Mid Peak",
+    
+    TRUE ~ NA
+  )) 
+
+# plot frequency bar graph of different trend types
+quad_reg_class %>% 
+  mutate(trend = factor(
+    trend, 
+    levels = c("Increasing", "Decreasing", "Mid Peak", "Mid Valley",
+               "Low Peak", "Low Valley", "High Peak", "High Valley", "NS")
+    )) %>% 
+  group_by(metric) %>% 
+  count(trend) %>% 
+  ggplot() +
+  geom_col(aes(x = trend, y = n, fill = trend)) +
+  facet_wrap(~ metric, ncol = 1) +
+  scale_fill_pal +
+  theme(legend.position = "none")
+```
+
+For the analysis of deterministic strength in elevational patterns, I start with the calculated SES values, and fit individual linear models for each mountain separately (similar to the first analysis but elevation is scaled here). 
+
+```{r}
+# iterate over each mountain in the dataset:
+# fit LM of each metric against linear & 2nd-order polynomial terms of scaled elevation
+# extract model predictions for each mountain
+
+metric_sess <- glue("SES.{metric_cols}")
+to_iter <- expand.grid(mountain = list_mount, metric = metric_sess)
+
+quad_reg_ses <- map2(to_iter$mountain, to_iter$metric, ~ {
+  
+  data_mount <- data_dryad %>% filter(Mountain == .x)
+  model_formula <- as.formula(glue("{.y} ~ elevation_scaled + I(elevation_scaled^2)"))
+  model_mount <- lm(model_formula, data_mount)
+  
+  # predict only for elevations present in each mountain
+  to_pred <- data_mount %>% distinct(Mountain, elevation_scaled)
+  # predict
+  model_pred <- predict(model_mount, newdata = to_pred, type = "response")
+  pred <- bind_cols(to_pred, pred = model_pred)
+  
+  tibble(mountain = .x, metric = .y) %>% 
+    left_join(pred, by = c("mountain" = "Mountain"))
+  
+}) %>% 
+  list_rbind() %>% 
+  relocate(metric, mountain) %>% # bring metric and mountain cols to the start
+  mutate(metric = gsub("\\.", " ", metric)) %>% # remove period from metric name
+  mutate(metric = factor(metric,
+                         levels = c("SES FRic", "SES FDis", "SES PD", "SES MPD")))
+
+# summarise original data to plot raw data points
+
+data_dryad_ses <- data_dryad %>% 
+  select(Mountain, elevation_scaled, starts_with("SES")) %>% 
+  pivot_longer(cols = starts_with("SES"), 
+               names_to = "metric", values_to = "obs") %>% 
+  rename(mountain = Mountain) %>% 
+  mutate(metric = gsub("\\.", " ", metric)) %>% # remove period from metric name
+  mutate(metric = factor(metric,
+                         levels = c("SES FRic", "SES FDis", "SES PD", "SES MPD")))
+```
+
+Then, I fit the linear mixed-effects model testing the diversity metrics as a function of scaled elevation. This time, I extract not only model predictions, but also the model summary to prepare @tbl-mem-summ. 
+
+```{r}
+quad_lmm_ses_output <- map(metric_sess, ~ {
+  
+  model_formula <- as.formula(glue(
+    "{.x} ~ elevation_scaled + I(elevation_scaled^2) + (1 | Mountain)"
+  ))
+  # REML = FALSE because we use Likelihood Ratio Test
+  model_ses <- lmer(model_formula, data_dryad, REML = FALSE) 
+  
+  # predict only for elevations present in each mountain
+  to_pred <- data_dryad %>% distinct(elevation_scaled)
+  # predict
+  model_pred <- predict(model_ses, newdata = to_pred, type = "response", 
+                        re.form = NA)
+  pred <- bind_cols(to_pred, pred = model_pred) %>% mutate(metric = .x)
+  
+  # also generate model summary for Table 1
+  summ <- gen_mem_summ(model_ses) %>% mutate(metric = .x)
+  
+  # return both
+  list(predicted = pred,
+       summary = summ)
+  
+})
+
+# model predictions
+quad_lmm_ses <- map(quad_lmm_ses_output, "predicted") %>% 
+  list_rbind() %>% 
+  relocate(metric) %>%  # bring metric col to the start
+  mutate(metric = gsub("\\.", " ", metric)) %>% # remove period from metric name
+  mutate(metric = factor(metric,
+                         levels = c("SES FRic", "SES FDis", "SES PD", "SES MPD")))
+
+# model summary
+quad_lmm_ses_summ <- map(quad_lmm_ses_output, "summary") %>%
+  list_rbind() %>% 
+  relocate(metric) %>% 
+  # refining formatting of labels and values
+  mutate(metric = gsub("\\.", " ", metric), # remove period from metric name
+         term = str_replace(term, "elevation_scaled", "Elevation")) %>% 
+  mutate(term = if_else(str_detect(term, "\\("),
+                        str_match(term, "\\(([^()]*)\\)")[, 2],
+                        term) %>% 
+         str_replace_all("\\^2", "<sup>2</sup>")) %>% 
+  mutate(term = str_replace(term, "Mountain", "Mountain (random effect)")) %>% 
+  pivot_wider(names_from = "metric", values_from = "value") %>% 
+  rename(Terms = term)
+
+```
+
+Finally, Figure 3 of the original paper is created as a `patchwork` as opposed to simple facetting, due to the complicated nature of each panel (specifically, the marginal histograms), and the model summary extracted above is depicted as a table.
+
+```{r}
+#| fig.asp: 1
+
+fig3_panel <- function(which_metric) {
+  
+  (
+    # base plot
+    ggplot() +
+      # raw data points
+      geom_point(data = data_dryad_ses %>% filter(metric == which_metric), 
+                 col = "grey", alpha = 0.5,
+                 mapping = aes(x = elevation_scaled, y = obs, group = mountain)) +
+      # individual mountain model predictions (blue line)
+      geom_line(data = quad_reg_ses %>% filter(metric == which_metric), 
+                col = "#00538F",
+                mapping = aes(x = elevation_scaled, y = pred, group = mountain)) +
+      geom_hline(yintercept = 0) +
+      # overall LMM prediction across all mountains (black line)
+      geom_line(data = quad_lmm_ses %>% filter(metric == which_metric), 
+                linewidth = 1.25,
+                mapping = aes(x = elevation_scaled, y = pred)) +
+      labs(x = "Elevation (scaled)", y = which_metric) +
+      # match strip format in paper
+      theme(axis.title.y = element_text(size = 10))
+  ) %>% 
+    # include marginal histograms
+    ggMarginal(type = "histogram", fill = "grey")
+  
+}
+
+metric_sess_form <- gsub("\\.", " ", metric_sess)
+
+(wrap_elements(fig3_panel(metric_sess_form[1])) | 
+  wrap_elements(fig3_panel(metric_sess_form[2]))) /
+  (wrap_elements(fig3_panel(metric_sess_form[3])) | 
+     wrap_elements(fig3_panel(metric_sess_form[4]))) &
+  plot_annotation(tag_levels = "a", tag_prefix = "(", tag_suffix = ")") &
+  theme(plot.tag.position = c(0.05, 0.95)) # align tags with axis labels
+```
+
+```{r tbl-mem-summ}
+#| tbl-cap: Parameter estimates (with SE) of mixed-effects models. The last row shows variances of the random effect term, Mountain.
+#| echo: false
+
+knitr::kable(quad_lmm_ses_summ)
+```
+ 
+# Learnings and takeaways
+
+I would not say that any one aspect of the exercise was particularly most instructive, but going through this process and realising that my reproduction still contains gaps despite getting the same final results, has reaffirmed to me how difficult it is to achieve 100% reproducibility especially when not following a code-first approach. By this I mean a workflow which does not just create code as and when the need arises, patching together the different moving parts after the fact, or which does not irreparably decouple code and outputs from text (reports, manuscripts); I mean a workflow that follows more of a software development approach involving iterative optimisation, stress testing and cleaning of code; functional and modular programming; version control, etc. The different tools and features provided by the tidyverse and its *tidy* philosophy as well as RStudio and R Projects are designed to help with just this, but still fall outside the workflows of many scientists working with R. 
+
+For instance, one point of confusion and frustration for me was the lack of information on how the authors actually performed the classification of trends. Even if they had not done the classification using code, some basic testing of the analytical pipeline would have identified this particular "gap" in information. In my case, since there was no original code to begin with, the reproduction process probably ended up being much less frustrating than it could have been, based on my conversations with peers in the class. In most of those cases, issues with the code usually traced back to some of these fundamental points outlined above. 
+
+All of this has made me start thinking, rather radically, that the field of ecology and evolutionary biology as a whole should start placing greater and stricter emphasis on coding practices instead of simply focusing on learning a particular programming language. Courses such as this current one should be mandated for students entering research careers. Journals should introduce strict code-related acceptance criteria and also enforce them (which we have seen does not happen as much), specifically avoiding publishing studies whose codebases are not immediately or relatively quickly reproducible. For long, I have remained fundamentally against mandates and coercion, acknowledging the significant costs associated with learning and adopting these tools and approaches. However, just like ecologists quickly accepted the notoriously steep learning curves of R and Python as nothing but a rite of passage, just like universities and institutions quickly (and questionably) accepted the ridiculous dollar costs of open-access publishing, just like authors have learned that there is a net positive to mandatory open data archiving---sometimes we just need a paradigm shift and that is okay.
+
+I have been improving my personal workflow for a few years now, and I think I am currently in a decent place. But as an example of applying some of my learnings from this project into my own research, I think I will be selective about not just the journals I submit my own work to (e.g., avoid journals with page limits on supplementary material), but also the journals I choose to review for (e.g., how are their data and code archiving policies?). Additionally, I will choose not to review manuscripts that do not have reasonably "good" codebases. My [response to the ethos question in Activity 2](https://github.com/rikudoukarthik/BIOL7800-reproducible-research/blob/f1881534f346137add67f3ff8617f8258c900026/activities/activity-2.qmd#L33C1-L39C1) has not really changed, but there I had highlighted the non-negligible costs involved in all this; in order to lower these costs and to help people transition to open and reproducible workflows and approaches, I want to create or curate some resources *in an effective manner*. For example, I will create a slide deck (perhaps interactive) to use in a walkthrough-like presentation to my labmates, which will highlight certain practical aspects like live and remote collaboration, or version control, without diving into technical or theoretical nitty-gritties. 
+
+Lastly, I will also be reflecting more over the coming weeks, and I hope to finally articulate my personal manifesto for reproducible and open research, and publish it on my website.
+
+# References
